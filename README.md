@@ -11,6 +11,13 @@ This repository is intended to become a reusable, open-source, **single-practice
 
 The product repository is **independent from AI tools**. It builds, tests and deploys without Claude Code. Claude Code workspace is a separate GitHub repository, locally checked out one directory above as `../`.
 
+## Already cloned this repository from GitHub?
+
+Copy the **contents** of the scaffold archive's `MedicalPractice-Platform/` directory
+into your existing `project/` checkout. Keep the existing `.git/` directory and
+GitHub-generated `LICENSE`; do not initialize a new Git repository. Review staged
+files before committing. See `docs/REPOSITORY_POLICY.md`.
+
 ## Starting from this scaffold
 
 1. Establish your two GitHub repositories independently; do not use Git submodules.
