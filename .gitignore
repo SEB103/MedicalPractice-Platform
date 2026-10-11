@@ -1,0 +1,83 @@
+# ============================================================
+# Repository B: clean source product — no AI artifacts.
+# ============================================================
+# AI assistants are hosted in a separate external repository.
+/.claude/
+/.codex/
+/.agents/
+/.opencode/
+/CLAUDE.md
+/CLAUDE.local.md
+/AGENTS.md
+/opencode.jsonc
+/task-context/
+/reference/
+/generated-docs/
+
+# Local secrets, keys and working data (never in Git)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite3
+*.db
+*.sqlite3-*
+*.dump
+*.sql.gz
+*.log
+
+# Python/Django
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+/backend/media/
+/backend/staticfiles/
+
+# Node.js / Vue / Quasar
+node_modules/
+**/node_modules/
+/frontend/dist/
+/frontend/.quasar/
+/frontend/.output/
+/frontend/.nuxt/
+/frontend/coverage/
+*.tsbuildinfo
+
+# Build and release artifacts
+/build/
+/dist/
+/release/
+/artifacts/
+*.zip
+*.tar.gz
+
+# IDE local settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Deployment/runtime data
+/deployment/data/
+/deployment/backups/
+/deployment/logs/
+
+# OS/temp
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.swp
+*.bak
+
+# IMPORTANT: do NOT ignore .github/, package lock files,
+# Python dependency locks, migrations or product/docs.

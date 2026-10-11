@@ -1,0 +1,10 @@
+{
+  "$comment": "Single source of truth for the planned product version. Not yet a release.",
+  "displayName": "Medical Practice Platform",
+  "identifier": "medical-practice-platform",
+  "version": "0.0.1",
+  "publisher": "Medical Practice Platform Contributors",
+  "artifactBase": "MedicalPractice",
+  "apiVersion": "v1",
+  "releaseEnabled": false
+}

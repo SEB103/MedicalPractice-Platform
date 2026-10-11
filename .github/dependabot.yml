@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+# Add pip/uv and npm package ecosystems when their manifests/lockfiles exist.
