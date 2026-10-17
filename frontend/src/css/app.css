@@ -1,0 +1,515 @@
+/* Shared tokens. Public editorial typography; functional portal typography. */
+:root {
+  --surface: #f7f7f2;
+  --card: #ffffff;
+  --ink: #263e34;
+  --muted: #54655b;
+  --hero: #e9eee4;
+  --line: #d9e1d7;
+  --display: Georgia, 'Times New Roman', serif;
+  --radius: 16px;
+  --hero-radius: 160px 160px 24px 24px;
+  --content-width: 1200px;
+  --section-space: clamp(48px, 7vw, 96px);
+  --page-gutter: clamp(16px, 3vw, 32px);
+  --primary-on: #ffffff;
+  --shadow: 0 16px 45px #213a2710;
+}
+:root[data-palette='psychiatry'] {
+  --surface: #fbf6f1;
+  --ink: #493648;
+  --muted: #6d5d6b;
+  --hero: #f0e5ed;
+  --line: #e3d7df;
+  --radius: 26px;
+  --hero-radius: 220px 220px 140px 140px;
+}
+:root[data-palette='gemeinschaft'] {
+  --surface: #f3f6f8;
+  --ink: #263e51;
+  --muted: #52677a;
+  --hero: #e4edf3;
+  --line: #d0dce5;
+  --radius: 8px;
+  --hero-radius: 8px;
+}
+body.body--dark {
+  --surface: #17231d;
+  --card: #213128;
+  --ink: #edf4ed;
+  --muted: #bdcec1;
+  --hero: #2b3e31;
+  --line: #46604d;
+  --primary-on: #17231d;
+  --shadow: none;
+}
+[data-palette='psychiatry'] body.body--dark {
+  --surface: #251f29;
+  --card: #332a38;
+  --ink: #f4edf5;
+  --muted: #d1bfd2;
+  --hero: #44354a;
+  --line: #66506b;
+}
+[data-palette='gemeinschaft'] body.body--dark {
+  --surface: #192530;
+  --card: #253746;
+  --ink: #edf4fa;
+  --muted: #bed0df;
+  --hero: #2d4659;
+  --line: #4c667b;
+}
+body {
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+a {
+  color: var(--q-primary);
+}
+.content-width {
+  width: 100%;
+  max-width: var(--content-width);
+  margin-inline: auto;
+}
+.page-space {
+  padding: 40px var(--page-gutter) 72px;
+}
+.public-layout .page-title,
+.public-layout .section-title {
+  font-family: var(--display);
+  font-weight: 400;
+}
+.page-title {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+.patient-layout .page-title {
+  font-size: clamp(1.9rem, 3vw, 2.8rem);
+}
+.section-title {
+  font-size: clamp(1.85rem, 3vw, 2.7rem);
+  line-height: 1.2;
+}
+.muted {
+  color: var(--muted);
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.q-card,
+.q-drawer,
+.q-toolbar.site-toolbar,
+.patient-bottom-nav {
+  background: var(--card);
+  color: var(--ink);
+}
+.q-card {
+  border-radius: var(--radius);
+}
+.q-card--bordered {
+  border-color: var(--line);
+}
+.q-btn {
+  min-height: 44px;
+}
+.q-btn.bg-primary,
+.bg-primary.text-white {
+  color: var(--primary-on) !important;
+}
+.q-btn--round {
+  min-width: 44px;
+}
+.q-item {
+  min-height: 48px;
+}
+.q-field__native,
+.q-item__label {
+  overflow-wrap: anywhere;
+}
+.q-date {
+  max-width: 100%;
+}
+.hero-panel,
+.soft-panel {
+  background: var(--hero);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.brand-mark {
+  width: 35px;
+  height: 44px;
+  color: var(--q-primary);
+}
+.brand strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+.brand small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 7px;
+  color: var(--muted);
+}
+.site-toolbar {
+  min-height: 88px;
+  padding-inline: var(--page-gutter);
+}
+.site-toolbar .q-router-link--active:not(.bg-primary) {
+  color: var(--q-primary);
+  background: var(--hero);
+}
+.demo-bar {
+  background: var(--hero);
+  color: var(--ink);
+  padding: 6px 16px;
+}
+.demo-select {
+  min-width: 155px;
+}
+.home-hero {
+  display: grid;
+  grid-template-columns: 1.08fr 1fr;
+  align-items: center;
+  gap: clamp(28px, 6vw, 86px);
+  padding: 22px 0 50px;
+}
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(3.2rem, 6.2vw, 5.8rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  margin: 24px 0;
+}
+.hero-title em {
+  color: var(--q-primary);
+  font-weight: 400;
+  display: block;
+}
+.hero-description {
+  max-width: 480px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+.hero-visual {
+  position: relative;
+  padding: 0 0 28px 20px;
+}
+.hero-visual .q-img {
+  border-radius: var(--hero-radius);
+  box-shadow: var(--shadow);
+}
+.hero-note {
+  position: absolute;
+  left: 0;
+  right: 30px;
+  bottom: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.hero-note span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+[data-palette='psychiatry'] .home-hero {
+  grid-template-columns: 1.15fr 1fr;
+  gap: 60px;
+}
+[data-palette='psychiatry'] .hero-note {
+  text-align: center;
+  right: 20px;
+  left: 40px;
+}
+[data-palette='psychiatry'] .values-strip {
+  border-radius: 80px;
+  background: var(--hero);
+  padding: 32px;
+  border: none;
+}
+[data-palette='gemeinschaft'] .hero-visual {
+  padding: 0 0 28px;
+  border-right: 8px solid var(--q-primary);
+}
+[data-palette='gemeinschaft'] .hero-note {
+  left: 20px;
+  right: 20px;
+}
+[data-palette='gemeinschaft'] .values-strip > div + div {
+  border-left: 1px solid var(--line);
+}
+.values-strip {
+  border-block: 1px solid var(--line);
+  padding-block: 28px;
+}
+.section-space {
+  margin-block: var(--section-space);
+}
+.service-number {
+  font-family: var(--display);
+  font-size: 36px;
+  color: var(--q-primary);
+  opacity: 0.7;
+}
+.service-feature {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 24px;
+  align-items: start;
+  padding: 32px;
+  border-top: 1px solid var(--line);
+}
+.service-feature:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.service-feature h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 400;
+}
+.public-intro {
+  max-width: 760px;
+  font-size: 18px;
+  line-height: 1.75;
+}
+.practice-media {
+  margin: 0;
+  min-width: 0;
+}
+.practice-media .q-img {
+  border-radius: var(--radius);
+}
+.media-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  background: var(--hero);
+  color: var(--muted);
+}
+.portrait-placeholder {
+  min-height: 360px;
+  border-radius: var(--hero-radius);
+}
+.article-copy {
+  max-width: 760px;
+  line-height: 1.8;
+}
+.article-copy h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 400;
+  margin-top: 32px;
+}
+.legal-section {
+  scroll-margin-top: 200px;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.footer-brand {
+  padding-block: 40px;
+}
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+}
+.skip-link {
+  position: fixed;
+  top: -80px;
+  left: 12px;
+  z-index: 9000;
+  padding: 12px;
+  background: var(--card);
+  color: var(--ink);
+}
+.skip-link:focus {
+  top: 8px;
+}
+:focus-visible {
+  outline: 3px solid var(--q-primary);
+  outline-offset: 3px;
+}
+h1[tabindex='-1']:focus,
+#main-content:focus,
+#patient-content:focus {
+  outline: none;
+}
+.q-date__calendar-item .q-btn {
+  min-height: 36px;
+}
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 12px;
+}
+.slot-grid .q-btn {
+  min-height: 52px;
+}
+.dashboard-calendar .q-date {
+  width: 100%;
+  box-shadow: none;
+}
+.patient-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@media (max-width: 1023px) {
+  .home-hero,
+  [data-palette='psychiatry'] .home-hero {
+    gap: 32px;
+  }
+  .hero-title {
+    font-size: clamp(3rem, 6vw, 4.2rem);
+  }
+  .patient-layout .page-space {
+    padding-bottom: 96px;
+  }
+}
+@media (max-width: 599px) {
+  .page-space {
+    padding-top: 24px;
+  }
+  .home-hero,
+  [data-palette='psychiatry'] .home-hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .hero-title {
+    font-size: clamp(2.8rem, 11vw, 4rem);
+  }
+  .hero-description {
+    font-size: 16px;
+  }
+  .hero-visual {
+    padding-left: 16px;
+  }
+  .hero-visual .q-img {
+    max-height: 400px;
+  }
+  .hero-note {
+    padding: 16px;
+  }
+  .site-toolbar {
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+  .portal-entry {
+    order: 3;
+    width: 100%;
+    margin: 12px 0 0 !important;
+  }
+  .brand strong {
+    font-size: 24px;
+  }
+  .demo-select {
+    min-width: 135px;
+    flex: 1;
+  }
+  .service-feature {
+    grid-template-columns: 44px 1fr;
+    padding: 24px 0;
+    gap: 16px;
+  }
+  .service-feature > .q-btn {
+    grid-column: 2;
+    justify-self: start;
+  }
+  [data-palette='psychiatry'] .values-strip {
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  [data-palette='gemeinschaft'] .values-strip > div + div {
+    border-left: none;
+  }
+  .q-stepper--vertical .q-stepper__step-inner {
+    padding: 12px 12px 24px;
+  }
+  .q-stepper--vertical .q-stepper__tab {
+    padding: 16px;
+  }
+  .q-stepper__step-content .row > .col {
+    flex: 1 1 100%;
+  }
+  .q-date {
+    width: 100%;
+    min-width: 0;
+  }
+  .q-date__content {
+    min-width: 0;
+  }
+  .q-date__calendar-item .q-btn {
+    min-width: 30px;
+  }
+  .hero-panel > .q-pa-xl {
+    padding: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.legal-section h2 {
+  scroll-margin-top: 200px;
+}
+
+.preview-notice {
+  padding: 6px 16px;
+  background: var(--hero);
+  color: var(--muted);
+  font-size: 12px;
+}
+.booking-calendar {
+  width: 350px;
+}
+.booking-calendar .q-date__calendar-item .q-btn {
+  min-height: 42px;
+}
+.booking-calendar .q-date__calendar-item--out {
+  opacity: 0.4;
+}
+@media (max-width: 599px) {
+  .booking-calendar {
+    width: 100%;
+  }
+  .q-stepper--vertical .q-stepper__step-inner {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
