@@ -1,5 +1,14 @@
-# Quasar frontend — to be initialized
+# MedicalPractice — Quasar frontend
 
-Initialize Vue 3 + Quasar CLI with Vite and TypeScript under this directory. Keep the generated package scripts, TypeScript configuration and lockfile under Product Git.
+Vue 3 + TypeScript + Quasar 2 prototype imported from the Sites source snapshot (2), 17 October 2026.
 
-Public website and authenticated portal consume the independent Django `/api/v1/` REST API. Mobile/Desktop via Capacitor/Electron are future possibilities, not part of initial scaffolding. SPA vs SSR is an explicit later ADR.
+Run from the Product repository root with **Node.js 24.x**:
+
+```bash
+npm ci
+npm run dev --workspace frontend
+```
+
+For validation: `npm run check`, `npm run lint --workspace frontend`, `npm test`, `npm run build`.
+
+The application is a demonstration with synthetic data and localStorage state, **not a production medical service**. Django/Wagtail and secure server-side authorization are not implemented. See [`docs/quasar/README.md`](../docs/quasar/README.md) and [`docs/quasar/ARCHITECTURE.md`](../docs/quasar/ARCHITECTURE.md).
