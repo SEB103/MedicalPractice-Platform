@@ -1,8 +1,6 @@
 import { practices } from '../mocks/practice'
-export interface WorkingWindow {
-  start: string
-  end: string
-}
+import { weeklyHours, type WorkingWindow } from './practice-hours'
+export type { WorkingWindow } from './practice-hours'
 export interface ScheduleConfig {
   stepMinutes: number
   bufferMinutes: number
@@ -26,25 +24,7 @@ export function scheduleFor(today: string): ScheduleConfig {
     stepMinutes: 15,
     bufferMinutes: 10,
     horizonDays: 90,
-    weekly: {
-      1: [
-        { start: '09:00', end: '12:00' },
-        { start: '14:00', end: '17:00' },
-      ],
-      2: [
-        { start: '09:00', end: '12:00' },
-        { start: '14:00', end: '17:00' },
-      ],
-      3: [
-        { start: '09:00', end: '11:00' },
-        { start: '14:00', end: '16:00' },
-      ],
-      4: [
-        { start: '09:00', end: '12:00' },
-        { start: '14:00', end: '17:00' },
-      ],
-      5: [{ start: '09:00', end: '12:00' }],
-    },
+    weekly: structuredClone(weeklyHours),
     closedDates: [...new Set([today.slice(0, 4), datePlus(today, 90).slice(0, 4)])].flatMap(
       (year) =>
         ['01-01', '12-25', '12-26'].map((day) => ({

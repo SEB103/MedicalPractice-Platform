@@ -4,9 +4,11 @@ import type { QTableColumn } from 'quasar'
 import PageHeading from '../../components/PageHeading.vue'
 import StatusChip from '../../components/StatusChip.vue'
 import LoadState from '../../components/LoadState.vue'
+import { useClock } from '../../composables/useClock'
 import { useAppointments } from '../../composables/useAppointments'
-import { berlinToday, formatDate } from '../../services/appointments'
+import { isUpcoming, formatDate } from '../../services/appointments'
 const { records, loading, error, load } = useAppointments()
+const now = useClock()
 const filter = ref('upcoming')
 const rows = computed(() =>
   records.value
@@ -14,8 +16,8 @@ const rows = computed(() =>
       (a) =>
         filter.value === 'all' ||
         (filter.value === 'upcoming'
-          ? ['confirmed', 'pending'].includes(a.status) && a.date >= berlinToday()
-          : a.status === 'cancelled' || a.status === 'completed' || a.date < berlinToday()),
+          ? isUpcoming(a, now.value)
+          : !isUpcoming(a, now.value)),
     )
     .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)),
 )

@@ -1,3 +1,4 @@
+import { serviceById } from './service-catalog'
 import type { PatientService } from '../types/domain'
 import { useDemoStore } from '../stores/demo'
 import { cancelBooking, createBooking } from './appointments'
@@ -18,7 +19,25 @@ export function usePatientService(): PatientService {
       return demo.state.appointments.map((item) => ({ ...item }))
     },
     async book(input, replaceId) {
+      const profile = demo.state.theme
       await ready()
+      if (
+        profile !== demo.state.theme ||
+        (input.practiceProfile && input.practiceProfile !== profile)
+      )
+        throw new Error('Das Praxisprofil wurde geändert. Bitte wählen Sie Ihre Terminart erneut.')
+      const original = replaceId
+        ? demo.state.appointments.find((a) => a.id === replaceId)
+        : undefined
+      const selected = input.serviceId
+        ? serviceById(profile, input.serviceId)
+        : demo.practice.services.find((s) => s.title === input.service)
+      const legacy = !input.serviceId && original?.service === input.service
+      if (!selected && !legacy)
+        throw new Error('Diese Terminart gehört nicht zum aktuellen Praxisprofil.')
+      const normalized = selected
+        ? { ...input, serviceId: selected.id, service: selected.title, practiceProfile: profile }
+        : input
       if (demo.conflictNext) {
         demo.conflictNext = false
         throw new Error(
@@ -26,7 +45,7 @@ export function usePatientService(): PatientService {
         )
       }
       const id = crypto.randomUUID()
-      demo.state.appointments = createBooking(demo.state.appointments, input, id, replaceId)
+      demo.state.appointments = createBooking(demo.state.appointments, normalized, id, replaceId)
       demo.persist()
       return demo.state.appointments.find((item) => item.id === id)!
     },

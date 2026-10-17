@@ -85,7 +85,7 @@ const demo = useDemoStore()
                   dense
                   no-caps
                   color="primary"
-                  :to="'/leistungen/' + index"
+                  :to="'/leistungen/' + service.id"
                   label="Mehr erfahren"
                   icon-right="arrow_forward"
                 />

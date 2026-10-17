@@ -3,6 +3,8 @@ export type PracticeTheme = 'hausarzt' | 'psychiatry' | 'gemeinschaft'
 export type ColorMode = 'light' | 'dark' | 'system'
 export type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed'
 export interface Appointment {
+  serviceId?: string
+  practiceProfile?: PracticeTheme
   id: string
   date: string
   time: string
@@ -11,6 +13,8 @@ export interface Appointment {
   status: AppointmentStatus
 }
 export interface Booking {
+  serviceId?: string
+  practiceProfile?: PracticeTheme
   date: string
   time: string
   service: string

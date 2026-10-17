@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useAppearanceStore } from '../../stores/appearance'
 import {
   customTokens,
+  defaults,
   validHex,
   paletteOptions,
   standardPrimary,
@@ -14,12 +15,21 @@ import PageHeading from '../../components/PageHeading.vue'
 const owner = useAppearanceStore()
 const draft = ref<Appearance>({ ...owner.config })
 const message = ref('')
-const valid = computed(() => validHex(draft.value.customPrimary))
+const valid = computed(
+  () => draft.value.palette !== 'custom' || validHex(draft.value.customPrimary),
+)
 const samples = computed(() =>
   [false, true].map((dark) => {
     const tokens = customTokens(draft.value.customPrimary, dark)
-    if (draft.value.palette !== 'custom')
+    if (draft.value.palette !== 'custom') {
       tokens.primary = standardPrimary[draft.value.palette][dark ? 1 : 0]!
+      tokens['primary-on'] = dark ? '#111111' : '#ffffff'
+      tokens.muted = {
+        waldgruen: ['#54655b', '#bdcec1'],
+        pflaume: ['#6d5d6b', '#d1bfd2'],
+        stahlblau: ['#52677a', '#bed0df'],
+      }[draft.value.palette][dark ? 1 : 0]!
+    }
     return { dark, tokens }
   }),
 )
@@ -35,7 +45,12 @@ function previewStyle(dark: boolean) {
 }
 function apply() {
   if (!valid.value) return
-  owner.config = { ...draft.value }
+  owner.config = {
+    ...draft.value,
+    customPrimary: validHex(draft.value.customPrimary)
+      ? draft.value.customPrimary
+      : defaults().customPrimary,
+  }
   message.value = 'Farben lokal angewendet.'
 }
 function reset() {

@@ -18,6 +18,8 @@ export const useDemoStore = defineStore('demo', () => {
   const conflictNext = ref(false)
   const bookingDraft = ref<{
     service: string
+    serviceId: string
+    practiceProfile: PracticeTheme
     day: string | null
     time: string
     step: number

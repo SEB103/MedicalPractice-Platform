@@ -3,12 +3,14 @@ import { computed, ref, watch } from 'vue'
 import PageHeading from '../../components/PageHeading.vue'
 import StatusChip from '../../components/StatusChip.vue'
 import LoadState from '../../components/LoadState.vue'
+import { useClock } from '../../composables/useClock'
 import { useAppointments } from '../../composables/useAppointments'
-import { berlinToday, formatDate } from '../../services/appointments'
+import { berlinToday, isUpcoming, formatDate } from '../../services/appointments'
 const { records, loading, error, load } = useAppointments()
+const now = useClock()
 const upcoming = computed(() =>
   records.value
-    .filter((a) => ['confirmed', 'pending'].includes(a.status) && a.date >= berlinToday())
+    .filter((a) => isUpcoming(a, now.value))
     .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)),
 )
 const next = computed(() => upcoming.value[0])
@@ -38,7 +40,13 @@ const selectedAppointments = computed(() =>
           <div class="col-12 col-lg-8">
             <q-card flat bordered class="q-pa-lg">
               <div class="row items-center justify-between">
-                <h2 class="text-h6 q-mb-none">Ihr nächster Termin</h2>
+                <h2 class="text-h6 q-mb-none">
+                  {{
+                    next?.status === 'pending'
+                      ? 'Ihre nächste Terminanfrage'
+                      : 'Ihr nächster bestätigter Termin'
+                  }}
+                </h2>
                 <q-icon name="event_available" color="primary" size="32px" />
               </div>
               <template v-if="next">
@@ -96,7 +104,9 @@ const selectedAppointments = computed(() =>
                       flat
                       :first-day-of-week="1"
                     />
-                    <p class="text-caption muted">Markierte Tage: Ihre bevorstehenden Termine.</p>
+                    <p class="text-caption muted">
+                      Markierte Tage: bestätigte Termine und offene Anfragen.
+                    </p>
                   </div>
                   <div class="col-12 col-md-7">
                     <h2 class="text-h6">
@@ -144,7 +154,7 @@ const selectedAppointments = computed(() =>
             <q-card flat bordered>
               <q-card-section>
                 <h2 class="text-h6">Meine Termine</h2>
-                <p class="muted">{{ upcoming.length }} bevorstehende Termine</p>
+                <p class="muted">{{ upcoming.length }} bevorstehende Termine und Anfragen</p>
                 <q-btn
                   flat
                   no-caps

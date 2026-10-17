@@ -41,6 +41,7 @@ const maps = mapLinks(contact)
             <p v-else class="muted">
               Telefon: noch nicht hinterlegt. In dieser Demo ist kein Anruf möglich.
             </p>
+            <p v-if="contact.phone && contact.phoneNotice" class="muted">{{ contact.phoneNotice }}</p>
             <h3 class="text-h6">Telefonische Erreichbarkeit</h3>
             <p>{{ contact.telephoneHours }}</p>
             <q-separator class="q-my-lg" />

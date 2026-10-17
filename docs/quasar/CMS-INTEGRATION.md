@@ -26,3 +26,15 @@ focal point (%). Рендиции генерирует сервер; фронт�
 Справочная документация, изученная при реализации:
 https://docs.wagtail.org/en/stable/advanced_topics/api/v2/configuration.html
 https://docs.wagtail.org/en/stable/advanced_topics/images/focal_points.html
+
+## Review follow-up (2026-10-17)
+
+- `practice-hours.ts` is the single weekly-hours source for contact text and scheduling.
+- Service routing and new bookings use service IDs scoped by practice profile. Old numeric
+  URLs and existing name-only appointments remain supported; old appointments may be moved.
+- Booking drafts carry the profile and service ID. Palette changes do not affect them.
+- `mocks/patient-information.ts` centralizes FAQ and booking steps for future CMS mapping.
+- This is still partial CMS preparation: remaining UI copy, service catalog and contact
+  settings require validated API integration. The provider alone does not replace everything.
+- Demo telephone +49 30 23125 000 is a reserved fictional number, never an actual practice.
+  Source: https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Nummerierung/DramaNumbers/artikel.html

@@ -1,9 +1,11 @@
+import { weeklyHours, describeHours } from './practice-hours'
 export interface PracticeContact {
   locationLabel: string
   address: string
   addressVerified: boolean
   placeId?: string
   phone: string | null
+  phoneNotice?: string
   email: string
   consultationHours: [string, string][]
   telephoneHours: string
@@ -12,14 +14,11 @@ export const practiceContact: PracticeContact = {
   locationLabel: 'Rathaus Göppingen · Demostandort, keine Arztpraxis',
   address: 'Hauptstraße 1, 73033 Göppingen, Deutschland',
   addressVerified: true,
-  phone: null,
+  // Reserved fictional number: Bundesnetzagentur Drama Numbers.
+  phone: '+49 (0)30 23125 000',
+  phoneNotice: 'Demo-Telefonnummer · nicht erreichbar, kein Praxisanschluss.',
   email: 'praxis@example.invalid',
-  consultationHours: [
-    ['Montag / Dienstag / Donnerstag', '09:00–12:00 · 14:00–17:00'],
-    ['Mittwoch', '09:00–11:00 · 14:00–16:00'],
-    ['Freitag', '09:00–12:00'],
-    ['Samstag / Sonntag', 'Geschlossen'],
-  ],
+  consultationHours: describeHours(weeklyHours),
   telephoneHours: 'Montag bis Freitag · 09:00–11:00 (Demo)',
 }
 export function mapLinks(config: PracticeContact) {
@@ -36,7 +35,9 @@ export function mapLinks(config: PracticeContact) {
   }
 }
 export function phoneLink(phone: string | null) {
-  return phone && /^\+?[\d ()-]+$/.test(phone) ? 'tel:' + phone.replace(/[^+\d]/g, '') : undefined
+  return phone && /^\+?[\d ()-]+$/.test(phone)
+    ? 'tel:' + phone.replace(/^(\+\d{1,3})\s*\(0\)/, '$1').replace(/[^+\d]/g, '')
+    : undefined
 }
 export interface PracticeConfigApi {
   getContact(): Promise<PracticeContact>

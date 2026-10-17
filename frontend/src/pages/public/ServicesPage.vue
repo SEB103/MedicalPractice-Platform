@@ -43,7 +43,7 @@ const demo = useDemoStore()
             flat
             no-caps
             color="primary"
-            :to="'/leistungen/' + i"
+            :to="'/leistungen/' + service.id"
             label="Im Detail"
             icon-right="arrow_forward"
           />

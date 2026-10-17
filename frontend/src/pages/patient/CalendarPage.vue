@@ -11,14 +11,9 @@ import {
   slotsFor,
   canChange,
 } from '../../services/appointments'
-import {
-  durationFor,
-  scheduleFor,
-  closureReason,
-  timeLabel,
-  minutes,
-} from '../../services/schedule'
+import { scheduleFor, closureReason, timeLabel, minutes } from '../../services/schedule'
 import { practiceContact } from '../../services/practice-config'
+import { useClock } from '../../composables/useClock'
 import PageHeading from '../../components/PageHeading.vue'
 import StatusChip from '../../components/StatusChip.vue'
 const demo = useDemoStore()
@@ -26,18 +21,8 @@ const route = useRoute()
 const router = useRouter()
 const api = usePatientService()
 const $q = useQuasar()
-const savedDraft = route.query.replace || route.query.service ? null : demo.bookingDraft
-const step = ref(savedDraft?.step ?? 1)
-const service = ref(
-  savedDraft?.service ??
-    demo.practice.services.find((s) => s.id === route.query.service)?.title ??
-    demo.practice.services[0]?.title ??
-    'Ärztliche Beratung',
-)
-const day = ref<string | null>(
-  savedDraft?.day ?? firstAvailableDate(demo.state.appointments, durationFor(service.value)),
-)
-const time = ref(savedDraft?.time ?? '')
+const now = useClock()
+const today = computed(() => berlinToday(now.value))
 const busy = ref(false)
 const error = ref('')
 const replaceId = computed(() =>
@@ -47,23 +32,57 @@ const replaceId = computed(() =>
 )
 const original = computed(() => demo.state.appointments.find((a) => a.id === replaceId.value))
 const invalidReplacement = computed(
-  () => !!replaceId.value && (!original.value || !canChange(original.value)),
+  () => !!replaceId.value && (!original.value || !canChange(original.value, today.value)),
 )
-if (original.value) service.value = original.value.service
-const choices = computed(() =>
-  Array.from(
-    new Set([
-      ...demo.practice.services.map((s) => s.title),
-      ...(original.value ? [original.value.service] : []),
-    ]),
-  ),
+const choices = computed(() => {
+  const options = demo.practice.services.map((s) => ({
+    label: s.title,
+    value: s.id,
+    duration: s.durationMinutes,
+  }))
+  if (
+    original.value &&
+    !options.some(
+      (s) => s.value === original.value?.serviceId && s.label === original.value?.service,
+    )
+  )
+    options.push({
+      label: original.value.service,
+      value: 'legacy:' + original.value.id,
+      duration: original.value.durationMinutes ?? 30,
+    })
+  return options
+})
+const savedDraft =
+  !route.query.replace &&
+  !route.query.service &&
+  demo.bookingDraft?.practiceProfile === demo.state.theme &&
+  choices.value.some((s) => s.value === demo.bookingDraft?.serviceId)
+    ? demo.bookingDraft
+    : null
+const step = ref(savedDraft?.step ?? 1)
+const selectedServiceId = ref(
+  original.value
+    ? (choices.value.find(
+        (s) => s.value === original.value?.serviceId && s.label === original.value?.service,
+      )?.value ?? 'legacy:' + original.value.id)
+    : (choices.value.find((s) => s.value === route.query.service)?.value ??
+        savedDraft?.serviceId ??
+        choices.value[0]?.value ??
+        ''),
 )
-const duration = computed(() => durationFor(service.value))
-const schedule = computed(() => scheduleFor(berlinToday()))
+const selection = computed(() => choices.value.find((s) => s.value === selectedServiceId.value))
+const service = computed(() => selection.value?.label ?? '')
+const duration = computed(() => selection.value?.duration ?? 30)
+const day = ref<string | null>(
+  savedDraft?.day ?? firstAvailableDate(demo.state.appointments, duration.value),
+)
+const time = ref(savedDraft?.time ?? '')
+const schedule = computed(() => scheduleFor(today.value))
 const available = computed(() =>
   Object.fromEntries(
     Array.from({ length: schedule.value.horizonDays }, (_, i) => {
-      const d = new Date(berlinToday() + 'T12:00:00Z')
+      const d = new Date(today.value + 'T12:00:00Z')
       d.setUTCDate(d.getUTCDate() + i + 1)
       const date = d.toISOString().slice(0, 10)
       return [
@@ -71,7 +90,7 @@ const available = computed(() =>
         slotsFor(
           date,
           demo.state.appointments,
-          berlinToday(),
+          today.value,
           duration.value,
           schedule.value,
           replaceId.value,
@@ -95,7 +114,10 @@ watch(
   () => {
     if (!day.value || !dateAllowed(day.value))
       day.value = Object.keys(available.value).find((d) => available.value[d]!.length > 0) ?? null
-    if (!slots.value.includes(time.value)) time.value = ''
+    if (!slots.value.includes(time.value)) {
+      time.value = ''
+      if (step.value === 3) step.value = 2
+    }
   },
   { immediate: true },
 )
@@ -119,7 +141,9 @@ watch(day, () => {
 watch(
   () => demo.state.theme,
   () => {
-    service.value = choices.value[0] || 'Ärztliche Beratung'
+    selectedServiceId.value = choices.value[0]?.value ?? ''
+    step.value = 1
+    demo.bookingDraft = null
   },
 )
 const nearestDates = computed(() =>
@@ -127,22 +151,38 @@ const nearestDates = computed(() =>
     .filter((d) => available.value[d]!.length > 0)
     .slice(0, 5),
 )
-watch([service, day, time, step], () => {
+watch([selectedServiceId, day, time, step], () => {
   if (!replaceId.value)
     demo.bookingDraft = {
       service: service.value,
+      serviceId: selectedServiceId.value,
+      practiceProfile: demo.state.theme,
       day: day.value,
       time: time.value,
       step: step.value,
     }
 })
 async function submit() {
-  if (!day.value || !time.value || invalidReplacement.value) return
+  if (
+    !day.value ||
+    !slots.value.includes(time.value) ||
+    !selection.value ||
+    invalidReplacement.value
+  )
+    return
   busy.value = true
   error.value = ''
   try {
     const result = await api.book(
-      { date: day.value, time: time.value, service: service.value },
+      {
+        date: day.value,
+        time: time.value,
+        service: service.value,
+        serviceId: selectedServiceId.value.startsWith('legacy:')
+          ? undefined
+          : selectedServiceId.value,
+        practiceProfile: demo.state.theme,
+      },
       replaceId.value,
     )
     $q.notify({
@@ -190,7 +230,14 @@ async function submit() {
         >
           <q-step :name="1" title="Terminart" icon="medical_services" :done="step > 1">
             <h2 class="text-h6">Worum geht es bei Ihrem Besuch?</h2>
-            <q-select v-model="service" outlined :options="choices" label="Terminart" />
+            <q-select
+              v-model="selectedServiceId"
+              outlined
+              emit-value
+              map-options
+              :options="choices"
+              label="Terminart"
+            />
             <p class="muted q-mt-md">
               Dauer: {{ duration }} Minuten · Dr. Anna Linden · Vor Ort in der Praxis
             </p>
@@ -334,6 +381,7 @@ async function submit() {
                 v-if="demo.state.role === 'approved'"
                 :label="replaceId ? 'Neue Zeit anfragen' : 'Demo-Termin anfragen'"
                 :loading="busy"
+                :disable="!selection || !day || !slots.includes(time)"
                 @click="submit"
               />
               <q-btn

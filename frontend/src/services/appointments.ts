@@ -1,3 +1,4 @@
+import { serviceById } from './service-catalog'
 import {
   scheduleFor,
   windowsFor,
@@ -109,23 +110,27 @@ export function createBooking(
   const original = replaceId ? records.find((item) => item.id === replaceId) : undefined
   if (replaceId && (!original || !canChange(original, today)))
     throw new Error('Dieser Termin kann nicht mehr verschoben werden.')
+  const selected =
+    input.practiceProfile && input.serviceId
+      ? serviceById(input.practiceProfile, input.serviceId)
+      : undefined
+  const duration =
+    selected?.durationMinutes ??
+    (original?.service === input.service ? original.durationMinutes : undefined) ??
+    durationFor(input.service)
   if (
+    (input.serviceId && (!selected || selected.title !== input.service)) ||
     !isKnownService(input.service) ||
     (original?.date === input.date && original.time === input.time) ||
-    !slotsFor(
-      input.date,
-      records,
-      today,
-      durationFor(input.service),
-      scheduleFor(today),
-      replaceId,
-    ).includes(input.time)
+    !slotsFor(input.date, records, today, duration, scheduleFor(today), replaceId).includes(
+      input.time,
+    )
   )
     throw new Error('Der Termin ist nicht mehr verfügbar. Bitte wählen Sie eine andere Uhrzeit.')
   const next = records.map((item) =>
     item.id === replaceId ? { ...item, status: 'cancelled' as const } : item,
   )
-  return [...next, { ...input, durationMinutes: durationFor(input.service), id, status: 'pending' }]
+  return [...next, { ...input, durationMinutes: duration, id, status: 'pending' }]
 }
 export function cancelBooking(
   records: Appointment[],
@@ -176,4 +181,16 @@ export function formatDate(day: string): string {
   return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long', timeZone: 'Europe/Berlin' }).format(
     new Date(day + 'T12:00:00Z'),
   )
+}
+
+export function isUpcoming(item: Appointment, now = new Date()): boolean {
+  if (!['confirmed', 'pending'].includes(item.status)) return false
+  const today = berlinToday(now)
+  const time = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Berlin',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(now)
+  return item.date > today || (item.date === today && item.time >= time)
 }

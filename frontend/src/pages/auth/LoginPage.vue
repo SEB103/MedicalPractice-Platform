@@ -63,7 +63,7 @@ function login() {
           outline
           color="primary"
           no-caps
-          to="/registrieren"
+          :to="{ path: '/registrieren', query: { next: route.query.next } }"
           label="Demo-Registrierung ansehen"
           class="full-width"
         />

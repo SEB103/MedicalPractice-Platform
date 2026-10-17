@@ -19,8 +19,12 @@ npm.cmd run dev --workspace frontend
 
 Вход: **Patientenbereich → Als Demopatient anmelden**.
 Свободные даты доступны без входа: **Termin vereinbaren** → `/#/termine`.
-Настройки владельца и инструменты разработки: `/#/demo/erscheinungsbild`.
-Эта страница не является защищённой административной панелью и не включена в меню пациентов.
+Настройки владельца и инструменты разработки: значок оформления в шапке →
+**Demo: Farben & Einstellungen** под переключателем Hell / Dunkel / System.
+Переход доступен на публичных страницах и в кабинете пациента; он открывает `/#/demo/erscheinungsbild`.
+Выберите Waldgrün, Pflaume или Stahlblau и нажмите **Farben anwenden**.
+Эта страница не является защищённой административной панелью.
+Для реального сайта отключите демонстрационный переход в `frontend/src/config/demo.ts`.
 Обычному посетителю доступен переключатель Hell / Dunkel / System (значок в Header).
 Waldgrün / Pflaume / Stahlblau и собственный HEX-цвет настраиваются отдельно от медицинского профиля.
 Подробности изменений и границы проверки: `docs/UX-REFINEMENT.md`.

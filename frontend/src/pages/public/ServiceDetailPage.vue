@@ -2,10 +2,11 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDemoStore } from '../../stores/demo'
+import { serviceFromRoute } from '../../services/service-catalog'
 import PageHeading from '../../components/PageHeading.vue'
 const demo = useDemoStore()
 const route = useRoute()
-const service = computed(() => demo.practice.services[Number(route.params.id)])
+const service = computed(() => serviceFromRoute(demo.state.theme, String(route.params.id)))
 const content = computed(() => demo.content.serviceDetails.find((s) => s.id === service.value?.id))
 </script>
 <template>

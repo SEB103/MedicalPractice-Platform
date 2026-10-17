@@ -22,6 +22,7 @@ function logout() {
           Dies ist eine Simulation. Es findet keine echte Prüfung statt.
         </q-banner>
         <q-btn color="primary" unelevated no-caps to="/termine" label="Freie Termine ansehen" />
+        <q-btn flat no-caps to="/anmelden?next=/patient/calendar" label="Mit freigegebenem Demoaccount fortfahren" />
         <q-btn flat no-caps label="Abmelden" @click="logout" />
       </q-card-section>
     </q-card>

@@ -117,9 +117,11 @@ describe('Contact actions', () => {
     expect(route.searchParams.has('origin')).toBe(false)
   })
   it('makes dial links only for configured phone numbers', () => {
+    expect(phoneLink(practiceContact.phone)).toBe('tel:+493023125000')
+    expect(practiceContact.phoneNotice).toContain('nicht erreichbar')
     expect(phoneLink(null)).toBeUndefined()
     expect(phoneLink('not configured')).toBeUndefined()
-    expect(phoneLink('+49 (0) 123-45')).toBe('tel:+49012345')
+    expect(phoneLink('+49 (0) 123-45')).toBe('tel:+4912345')
   })
 })
 

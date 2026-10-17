@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDemoStore } from '../../stores/demo'
 import PageHeading from '../../components/PageHeading.vue'
 const agreed = ref(false)
 const demo = useDemoStore()
 const router = useRouter()
+const route = useRoute()
 function register() {
   if (!agreed.value) return
   demo.state.role = 'pending'
-  void router.push('/freigabe')
+  void router.push({ path:'/freigabe', query: { next: route.query.next } })
 }
 </script>
 <template>

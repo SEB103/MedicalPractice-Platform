@@ -1,26 +1,10 @@
 <script setup lang="ts">
+import { patientInformation } from '../../mocks/patient-information'
 import PageHeading from '../../components/PageHeading.vue'
 import PracticeMedia from '../../components/PracticeMedia.vue'
 import { useDemoStore } from '../../stores/demo'
 const demo = useDemoStore()
-const steps = [
-  {
-    title: 'Erst orientieren',
-    text: 'Informieren Sie sich über die Leistungen und organisatorischen Hinweise der Praxis.',
-  },
-  {
-    title: 'Patientenbereich freischalten',
-    text: 'Neue Demoaccounts warten auf Freigabe. Für einen direkten Einblick nutzen Sie den Account von Max Mustermann.',
-  },
-  {
-    title: 'Passenden Termin auswählen',
-    text: 'Wählen Sie die Terminart. Der Kalender berücksichtigt Dauer, freie Zeiten und Schließtage.',
-  },
-  {
-    title: 'In Ruhe ankommen',
-    text: 'Notieren Sie Ihre Fragen. Individuelle Hinweise zur Vorbereitung werden von der Praxis ergänzt.',
-  },
-]
+const steps = patientInformation.bookingSteps
 </script>
 <template>
   <q-page class="page-space">
@@ -51,8 +35,8 @@ const steps = [
             color="primary"
             unelevated
             no-caps
-            to="/registrieren"
-            label="Demo-Registrierung öffnen"
+            to="/termine"
+            label="Freie Termine ansehen"
           />
         </div>
         <div class="col-12 col-md-7">

@@ -16,7 +16,7 @@ import { protectedRedirect } from '../src/router/guard'
 import { useDemoStore } from '../src/stores/demo'
 import { usePatientService } from '../src/services/patient-service'
 const today = '2026-10-11'
-const booking = { date: '2026-10-12', time: '09:00', service: 'Erstgespräch' }
+const booking = { date: '2026-10-12', time: '09:00', service: 'Hausärztliche Beratung' }
 describe('Booking rules', () => {
   it('calculates the date in Berlin across midnight and DST', () => {
     expect(berlinToday(new Date('2026-10-10T23:15:00Z'))).toBe('2026-10-11')
