@@ -1,0 +1,69 @@
+name: Quasar CI and GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: medicalpractice-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Check, test and build frontend
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Typecheck frontend
+        run: npm run check
+      - name: Lint frontend
+        run: npm run lint --workspace frontend
+      - name: Test frontend
+        run: npm test
+      - name: Build Quasar for GitHub Pages
+        env:
+          MEDICALPRACTICE_BASE_PATH: /MedicalPractice-Platform/
+        run: npm run build --workspace frontend
+      - name: Verify published assets and public base path
+        shell: bash
+        run: |
+          test -f frontend/dist/spa/index.html
+          test -f frontend/dist/spa/praxis-room.svg
+          test -f frontend/dist/spa/praxis-room-psychiatry.svg
+          test -f frontend/dist/spa/praxis-room-gemeinschaft.svg
+          grep -q '/MedicalPractice-Platform/' frontend/dist/spa/index.html
+      - name: Upload GitHub Pages artifact
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: frontend/dist/spa
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
