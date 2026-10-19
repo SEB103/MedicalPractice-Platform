@@ -17,6 +17,12 @@ export default defineConfig(() => ({
       },
     },
   },
-  build: { vueRouterMode: 'hash', target: { browser: ['es2022'], node: 'node24' } },
+  build: {
+    vueRouterMode: 'hash',
+    // GitHub Pages serves this project under /MedicalPractice-Platform/, not the domain root.
+    // Keep the usual root path for local development and other deployments.
+    publicPath: process.env.MEDICALPRACTICE_BASE_PATH || '/',
+    target: { browser: ['es2022'], node: 'node24' },
+  },
   devServer: { open: false },
 }))

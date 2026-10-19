@@ -14,5 +14,5 @@ jobs:
           python-version: '3.12'
       - name: Validate scaffold metadata and clean Product structure
         run: python scripts/validate_scaffold.py
-      - name: Warn this is NOT application build/test
-        run: echo 'Scaffold validation only; Django and Quasar applications have not been initialized.'
+      - name: Clarify validation scope
+        run: echo 'This job checks only the Product scaffold; Quasar build/tests are handled by pages.yml. Django backend remains scaffold-only.'

@@ -1,13 +1,14 @@
 import { practices } from './practice'
 import type { PracticeTheme } from '../types/domain'
 import type { MediaAsset, PracticeContent } from '../types/content'
+const publicAssetBase = import.meta.env.BASE_URL
 const definitions = {
   hausarzt: {
     lead: 'Medizin mit Zeit.',
     emphasis: 'Für Sie.',
     eyebrow: 'Ihre Gesundheit. Persönlich begleitet.',
     note: 'Persönlich. In Ruhe. Auf Augenhöhe.',
-    image: '/praxis-room.svg',
+    image: `${publicAssetBase}praxis-room.svg`,
     values: [
       {
         icon: 'favorite_border',
@@ -31,7 +32,7 @@ const definitions = {
     emphasis: 'Zeit für Sie.',
     eyebrow: 'Psychiatrie & Psychotherapie',
     note: 'Vertraulich. Zugewandt. In Ihrem Tempo.',
-    image: '/praxis-room-psychiatry.svg',
+    image: `${publicAssetBase}praxis-room-psychiatry.svg`,
     values: [
       {
         icon: 'forum',
@@ -55,7 +56,7 @@ const definitions = {
     emphasis: 'Heute und morgen.',
     eyebrow: 'Ein klarer Blick auf Ihre Gesundheit.',
     note: 'Ein Kontakt. Klare Abläufe. Persönliche Medizin.',
-    image: '/praxis-room-gemeinschaft.svg',
+    image: `${publicAssetBase}praxis-room-gemeinschaft.svg`,
     values: [
       {
         icon: 'calendar_month',
