@@ -1,6 +1,6 @@
-# Medical Practice Platform — public demo scaffold
+# Medical Practice Platform — Quasar demo and Django development baseline
 
-**Status: initial repository template (NOT a functioning web application).**
+**Status: working Quasar static demo on GitHub Pages and initial Django backend with PostgreSQL CI tests. Not a production medical application.**
 
 This repository is intended to become a reusable, open-source, **single-practice** web platform:
 - Backend: Python, Django, Django REST Framework, Wagtail, PostgreSQL.
@@ -21,12 +21,12 @@ files before committing. See `docs/REPOSITORY_POLICY.md`.
 ## Starting from this scaffold
 
 1. Establish your two GitHub repositories independently; do not use Git submodules.
-2. Create actual backend under `backend/` with a documented environment and pinned dependencies; use verified Django/Wagtail/DRF compatible releases.
-3. Create actual Quasar application under `frontend/` using official Quasar CLI with TypeScript; keep package lockfile.
-4. Add local PostgreSQL Compose service, test fixtures, OpenAPI, CI tests and version parity.
+2. Extend the initial Django/DRF/Wagtail backend under `backend/`; see `backend/README.md`. Add a transitive dependency lock before deployment.
+3. Develop the existing Quasar frontend under `frontend/` using Quasar CLI and TypeScript; keep its package lockfile.
+4. Use the existing local PostgreSQL Compose service and backend tests; extend the API contract and test fixtures as features are implemented.
 5. Do not enable production deployment until security, DSGVO, backup and authorization reviews have passed.
 
-CI currently validates only **scaffold structure** and metadata — NOT an imaginary Django or Vue build.
+CI validates the scaffold, builds and tests Quasar, and runs Django/DRF/Wagtail tests against PostgreSQL. See `backend/README.md` and `docs/GITHUB_PAGES.md`.
 
 ## Repository convention
 

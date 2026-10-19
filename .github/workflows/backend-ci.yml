@@ -1,0 +1,61 @@
+name: Django backend CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  django:
+    name: Django, Wagtail, DRF and PostgreSQL tests
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: medicalpractice_ci
+          POSTGRES_USER: medicalpractice
+          POSTGRES_PASSWORD: ci-local-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U medicalpractice -d medicalpractice_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DJANGO_SECRET_KEY: ci-test-only-not-for-deployment
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: testserver,localhost,127.0.0.1
+      POSTGRES_DB: medicalpractice_ci
+      POSTGRES_USER: medicalpractice
+      POSTGRES_PASSWORD: ci-local-only
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+      - name: Django system checks
+        run: python manage.py check
+      - name: Detect missing migrations
+        run: python manage.py makemigrations --check --dry-run
+      - name: Run Django/DRF/Wagtail tests against PostgreSQL
+        run: python -m pytest -q
