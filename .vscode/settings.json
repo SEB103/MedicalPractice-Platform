@@ -1,0 +1,11 @@
+{
+  "git.autoRepositoryDetection": "subFolders",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.venv/**": true
+  }
+}
