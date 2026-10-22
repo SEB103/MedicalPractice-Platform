@@ -62,8 +62,10 @@ node_modules/
 *.zip
 *.tar.gz
 
-# IDE local settings
-.vscode/
+# IDE: share only portable VS Code settings; other IDE state stays local
+**/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
 .idea/
 *.code-workspace
 

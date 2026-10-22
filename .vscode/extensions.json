@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "anthropic.claude-code",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "charliermarsh.ruff",
+    "Vue.volar",
+    "dbaeumer.vscode-eslint",
+    "GitHub.vscode-pull-request-github",
+    "GitHub.vscode-github-actions",
+    "ms-azuretools.vscode-containers"
+  ]
+}
