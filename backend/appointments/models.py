@@ -74,5 +74,10 @@ class Appointment(models.Model):
             return "expired"
         return self.status
 
+    @property
+    def display_label(self) -> str:
+        extra = {"completed": "Termin wahrgenommen", "expired": "Anfrage nicht bestätigt"}
+        return extra.get(self.display_status) or self.get_status_display()
+
     def __str__(self):
         return f"Termin #{self.pk}"

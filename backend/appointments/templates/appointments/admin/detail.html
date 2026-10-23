@@ -1,0 +1,41 @@
+{% extends "wagtailadmin/generic/inspect.html" %}
+
+{% block main_content %}
+    <p><strong>Patient:</strong>
+        {% if object.patient %}<a href="{% url 'patients:inspect' object.patient.pk %}">{{ patient_label }}</a>{% else %}{{ patient_label }}{% endif %}
+        · <strong>Status:</strong> {{ object.display_label }}</p>
+    {{ block.super }}
+
+    {% if can_change %}
+        <h2 class="w-mt-8">Aktionen</h2>
+        {% if object.status == "requested" %}
+            <form method="post" action="{% url 'appointments_action' object.pk 'confirm' %}" class="w-mb-4">
+                {% csrf_token %}<button type="submit" class="button">Bestätigen</button>
+            </form>
+            <form method="post" action="{% url 'appointments_action' object.pk 'decline' %}" class="w-mb-4">
+                {% csrf_token %}
+                <label for="reason">Hinweis an den Patienten (optional, keine medizinischen Angaben)</label>
+                <input id="reason" type="text" name="reason" maxlength="200" placeholder="Termin leider nicht möglich, bitte anderen Termin wählen.">
+                <button type="submit" class="button button-secondary no">Ablehnen</button>
+            </form>
+        {% endif %}
+        {% if object.status == "requested" or object.status == "confirmed" %}
+            <form method="post" action="{% url 'appointments_action' object.pk 'reschedule' %}" class="w-mb-4">
+                {% csrf_token %}
+                <label for="start">Neuer Beginn (TT.MM.JJJJ HH:MM)</label>
+                <input id="start" type="text" name="start" placeholder="03.11.2026 10:00">
+                <button type="submit" class="button button-secondary">Verschieben</button>
+            </form>
+        {% endif %}
+        {% if object.display_status == "completed" %}
+            <form method="post" action="{% url 'appointments_action' object.pk 'no_show' %}" class="w-mb-4">
+                {% csrf_token %}<button type="submit" class="button button-secondary">Nicht erschienen</button>
+            </form>
+        {% endif %}
+        {% if object.status == "requested" or object.status == "confirmed" or object.status == "blocked" %}
+            <form method="post" action="{% url 'appointments_action' object.pk 'cancel' %}">
+                {% csrf_token %}<button type="submit" class="button button-secondary no">Absagen</button>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}

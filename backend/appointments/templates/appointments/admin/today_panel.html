@@ -1,0 +1,28 @@
+<section class="w-mb-8">
+    <h2>Heute in der Praxis · {{ today|date:"l, d.m.Y" }}</h2>
+    <p>
+        <a class="button {% if open_requests %}button-primary{% else %}button-secondary{% endif %}" href="{{ requests_url }}">Terminanfragen: {{ open_requests }}</a>
+        <a class="button {% if pending_patients %}button-primary{% else %}button-secondary{% endif %}" href="{{ patients_url }}">Neue Registrierungen: {{ pending_patients }}</a>
+    </p>
+    <h3>Termine der nächsten 7 Tage</h3>
+    {% if upcoming %}
+        <table class="listing">
+            <thead><tr><th>Zeit</th><th>Patient</th><th>Terminart</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for appointment in upcoming %}
+                {% ifchanged appointment.start.date %}
+                    <tr><th colspan="4">{{ appointment.start|date:"l, d.m.Y" }}</th></tr>
+                {% endifchanged %}
+                <tr>
+                    <td><a href="{% url 'appointments:inspect' appointment.pk %}">{{ appointment.start|date:"H:i" }}–{{ appointment.end|date:"H:i" }}</a></td>
+                    <td>{% if appointment.patient %}{{ appointment.patient.last_name }}, {{ appointment.patient.first_name }}{% else %}— Zeit blockiert{% endif %}</td>
+                    <td>{{ appointment.service|default:"—" }}</td>
+                    <td>{{ appointment.display_label }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Keine Termine in den nächsten 7 Tagen.</p>
+    {% endif %}
+</section>

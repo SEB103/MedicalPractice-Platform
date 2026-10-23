@@ -17,7 +17,9 @@ Stack: **Python 3.12, Django 5.2 LTS, Django REST Framework, Wagtail 7.4 LTS, Po
 
 - Schedule & booking (phase 2): services (`Terminart`), weekly hours, closures, special hours, booking rules (Wagtail setting `Terminregeln`); appointments with a PostgreSQL exclusion constraint against overlaps. API: `services/`, `practice/schedule/`, `availability/`, `appointments/` (+ `cancel/`, `reschedule/`) for approved patients. Fill a dev database with fictional services and hours: `python manage.py seed_demo_practice`.
 
-Not implemented yet: practice admin screens, public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
+- Practice admin in Wagtail (`/cms/`, phase 3): dashboard panel "Heute in der Praxis", menu "Terminanfragen", "Termine" (list with status/date filters, booking by phone, blocking time, confirm / decline / reschedule / cancel / no-show), "Patienten" (search, manual creation, record with visit history, possible-match hint, approve / link / reject / block), "Praxis-Einstellungen" (services, hours, closures, special hours) and the "Terminregeln" setting. Role `Empfang` sees patients and appointments only; `Praxisleitung` also settings and users; only superusers can grant administrator rights.
+
+Not implemented yet: public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
 
 **Custom user model:** databases created before phase 1 must be recreated (development data only): `docker compose -f deployment/compose.dev.yml down -v`, then `up -d` and `migrate`.
 
