@@ -59,3 +59,7 @@ jobs:
         run: python manage.py makemigrations --check --dry-run
       - name: Run Django/DRF/Wagtail tests against PostgreSQL
         run: python -m pytest -q
+      - name: Verify committed OpenAPI schema is up to date
+        run: |
+          python manage.py spectacular --validate --fail-on-warn --file /tmp/openapi.yaml
+          diff -u ../docs/api/openapi.yaml /tmp/openapi.yaml

@@ -12,7 +12,21 @@ Stack: **Python 3.12, Django 5.2 LTS, Django REST Framework, Wagtail 7.4 LTS, Po
 - Real PostgreSQL integration tests (Wagtail tables and admin access), no SQLite fallback.
 - GitHub workflow `.github/workflows/backend-ci.yml` runs installation, Django checks, missing-migration detection, and pytest on pushes / PRs to `master`.
 
-There are **no** implemented account approval, appointment booking, patient models, published CMS site, authorization policies for patients, or production infrastructure yet. The Quasar demo continues to use synthetic local data, not this API.
+- Accounts and patients (phase 1): custom e-mail `User`, `Patient` record (website or practice-created), roles `Praxisleitung` / `Empfang`, manual linking of registrations to existing patients (see `docs/adr/0001`–`0003`).
+- API under `/api/v1/`: `auth/csrf/`, `auth/register/`, `auth/login/`, `auth/logout/`, `auth/password-reset/`, `auth/password-reset/confirm/`, `me/`; OpenAPI at `/api/v1/schema/` and committed in `docs/api/openapi.yaml`.
+
+Not implemented yet: appointment booking, practice admin screens, public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
+
+**Custom user model:** databases created before phase 1 must be recreated (development data only): `docker compose -f deployment/compose.dev.yml down -v`, then `up -d` and `migrate`.
+
+Create the doctor account and set its password:
+
+```powershell
+python manage.py create_practice_owner --email dr.linden@example.invalid --first-name Anna --last-name Linden
+python manage.py changepassword dr.linden@example.invalid
+```
+
+After API changes regenerate the schema: `python manage.py spectacular --validate --file ../docs/api/openapi.yaml`.
 
 ## Start locally on Windows (PowerShell)
 
