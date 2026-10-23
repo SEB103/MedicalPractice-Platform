@@ -31,6 +31,7 @@ urlpatterns = [
         name="api-schema",
     ),
     path("api/v1/", include("accounts.urls")),
+    path("api/v1/", include("appointments.urls")),
     path("django-admin/", admin.site.urls),
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),

@@ -15,7 +15,9 @@ Stack: **Python 3.12, Django 5.2 LTS, Django REST Framework, Wagtail 7.4 LTS, Po
 - Accounts and patients (phase 1): custom e-mail `User`, `Patient` record (website or practice-created), roles `Praxisleitung` / `Empfang`, manual linking of registrations to existing patients (see `docs/adr/0001`–`0003`).
 - API under `/api/v1/`: `auth/csrf/`, `auth/register/`, `auth/login/`, `auth/logout/`, `auth/password-reset/`, `auth/password-reset/confirm/`, `me/`; OpenAPI at `/api/v1/schema/` and committed in `docs/api/openapi.yaml`.
 
-Not implemented yet: appointment booking, practice admin screens, public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
+- Schedule & booking (phase 2): services (`Terminart`), weekly hours, closures, special hours, booking rules (Wagtail setting `Terminregeln`); appointments with a PostgreSQL exclusion constraint against overlaps. API: `services/`, `practice/schedule/`, `availability/`, `appointments/` (+ `cancel/`, `reschedule/`) for approved patients. Fill a dev database with fictional services and hours: `python manage.py seed_demo_practice`.
+
+Not implemented yet: practice admin screens, public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
 
 **Custom user model:** databases created before phase 1 must be recreated (development data only): `docker compose -f deployment/compose.dev.yml down -v`, then `up -d` and `migrate`.
 
