@@ -3,6 +3,99 @@ info:
   title: MedicalPractice API
   version: '1'
 paths:
+  /api/v1/appointments/:
+    get:
+      operationId: appointments_list
+      tags:
+      - appointments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+          description: ''
+    post:
+      operationId: appointments_create
+      tags:
+      - appointments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Booking'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Booking'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+          description: ''
+  /api/v1/appointments/{id}/cancel/:
+    post:
+      operationId: appointments_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - appointments
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+          description: ''
+  /api/v1/appointments/{id}/reschedule/:
+    post:
+      operationId: appointments_reschedule_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - appointments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+          description: ''
   /api/v1/auth/csrf/:
     get:
       operationId: auth_csrf_retrieve
@@ -143,6 +236,37 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
+  /api/v1/availability/:
+    get:
+      operationId: availability_retrieve
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: 'YYYY-MM-DD, default: tomorrow'
+      - in: query
+        name: service
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: 'YYYY-MM-DD, default: end of booking horizon'
+      tags:
+      - availability
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Availability'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -197,8 +321,136 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+  /api/v1/practice/schedule/:
+    get:
+      operationId: practice_schedule_retrieve
+      tags:
+      - practice
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+          description: ''
+  /api/v1/services/:
+    get:
+      operationId: services_list
+      tags:
+      - services
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+          description: ''
 components:
   schemas:
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        service:
+          allOf:
+          - $ref: '#/components/schemas/Service'
+          readOnly: true
+        start:
+          type: string
+          format: date-time
+          title: Beginn
+        end:
+          type: string
+          format: date-time
+          title: Ende
+        status:
+          type: string
+          readOnly: true
+        decline_reason:
+          type: string
+          title: Hinweis an den Patienten
+          maxLength: 200
+        replaces:
+          type: integer
+          nullable: true
+        can_change:
+          type: boolean
+          readOnly: true
+      required:
+      - can_change
+      - end
+      - id
+      - service
+      - start
+      - status
+    Availability:
+      type: object
+      properties:
+        service:
+          type: integer
+        duration_minutes:
+          type: integer
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityDay'
+      required:
+      - days
+      - duration_minutes
+      - service
+    AvailabilityDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        slots:
+          type: array
+          items:
+            type: string
+            format: date-time
+      required:
+      - date
+      - slots
+    Booking:
+      type: object
+      properties:
+        service:
+          type: integer
+        start:
+          type: string
+          format: date-time
+      required:
+      - service
+      - start
+    Closure:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+          title: Von
+        end_date:
+          type: string
+          format: date
+          title: Bis
+        reason:
+          type: string
+          title: Hinweis
+          maxLength: 120
+      required:
+      - end_date
+      - start_date
     Login:
       type: object
       properties:
@@ -374,6 +626,83 @@ components:
       - last_name
       - password
       - privacy_accepted
+    Reschedule:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+      required:
+      - start
+    Schedule:
+      type: object
+      properties:
+        weekly:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeeklyWindow'
+        closures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Closure'
+        special_hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpecialHours'
+        slot_step_minutes:
+          type: integer
+        buffer_minutes:
+          type: integer
+        horizon_days:
+          type: integer
+      required:
+      - buffer_minutes
+      - closures
+      - horizon_days
+      - slot_step_minutes
+      - special_hours
+      - weekly
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: Bezeichnung
+          maxLength: 120
+        description:
+          type: string
+          title: Beschreibung
+        icon:
+          type: string
+          title: Icon (Material Icons)
+          maxLength: 60
+        duration_minutes:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          title: Dauer (Minuten)
+      required:
+      - id
+      - title
+    SpecialHours:
+      type: object
+      properties:
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+        date:
+          type: string
+          format: date
+      required:
+      - date
+      - end
+      - start
     StatusEnum:
       enum:
       - pending
@@ -386,6 +715,22 @@ components:
         * `approved` - Freigegeben
         * `rejected` - Abgelehnt
         * `blocked` - Gesperrt
+    WeeklyWindow:
+      type: object
+      properties:
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+        weekday:
+          type: integer
+          description: 0 = Montag … 6 = Sonntag
+      required:
+      - end
+      - start
+      - weekday
   securitySchemes:
     cookieAuth:
       type: apiKey
