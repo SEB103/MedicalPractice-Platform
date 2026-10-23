@@ -1,0 +1,52 @@
+{
+  // Run and Debug: "▶ Praxis starten (alles)" starts PostgreSQL, Django and the Quasar site.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend (Django)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "env": { "DJANGO_DEBUG": "1", "POSTGRES_PASSWORD": "local-dev-only" },
+      "preLaunchTask": "backend: prepare"
+    },
+    {
+      "name": "Website (Quasar, echtes API)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev --workspace frontend",
+      "windows": { "command": "npm.cmd run dev --workspace frontend" },
+      "cwd": "${workspaceFolder}",
+      "env": { "MEDICALPRACTICE_API": "http", "MEDICALPRACTICE_OPEN": "1" }
+    },
+    {
+      "name": "Backend (ohne Vorbereitung)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "env": { "DJANGO_DEBUG": "1", "POSTGRES_PASSWORD": "local-dev-only" },
+      "presentation": { "hidden": true }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "▶ Praxis starten (alles)",
+      "preLaunchTask": "backend: prepare",
+      "configurations": ["Backend (ohne Vorbereitung)", "Website (Quasar, echtes API)"],
+      "stopAll": true,
+      "presentation": { "order": 1 }
+    }
+  ]
+}

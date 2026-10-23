@@ -1,0 +1,88 @@
+{
+  // Local development only. Requires Docker Desktop (PostgreSQL) and Python 3.12+ / Node 24+.
+  "version": "2.0.0",
+  "options": {
+    "env": {
+      "DJANGO_DEBUG": "1",
+      "POSTGRES_PASSWORD": "local-dev-only"
+    }
+  },
+  "tasks": [
+    {
+      "label": "Einrichten (einmalig)",
+      "detail": "Python-Umgebung backend/.venv anlegen, Python- und npm-Pakete installieren",
+      "dependsOrder": "sequence",
+      "dependsOn": ["setup: venv", "setup: python packages", "setup: npm packages"],
+      "problemMatcher": []
+    },
+    {
+      "label": "setup: venv",
+      "type": "shell",
+      "command": "python -m venv backend/.venv",
+      "linux": { "command": "python3 -m venv backend/.venv" },
+      "osx": { "command": "python3 -m venv backend/.venv" },
+      "problemMatcher": []
+    },
+    {
+      "label": "setup: python packages",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m pip install -r backend/requirements-dev.txt",
+      "windows": { "command": "backend\\.venv\\Scripts\\python.exe -m pip install -r backend/requirements-dev.txt" },
+      "problemMatcher": []
+    },
+    {
+      "label": "setup: npm packages",
+      "type": "shell",
+      "command": "npm ci",
+      "windows": { "command": "npm.cmd ci" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Datenbank starten",
+      "detail": "PostgreSQL im Docker-Container (Docker Desktop muss laufen)",
+      "type": "shell",
+      "command": "docker compose -f deployment/compose.dev.yml up -d --wait",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: migrate",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py migrate",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py migrate" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: prepare",
+      "detail": "Datenbank starten und Migrationen anwenden",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Datenbank starten", "db: migrate"],
+      "problemMatcher": []
+    },
+    {
+      "label": "db: seed",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py seed_demo_practice && ${workspaceFolder}/backend/.venv/bin/python manage.py seed_demo_accounts",
+      "windows": {
+        "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py seed_demo_practice; ${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py seed_demo_accounts"
+      },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Demo-Daten anlegen",
+      "detail": "Terminarten, Sprechzeiten und fiktive Demo-Konten (Logins in backend/.env.demo-login)",
+      "dependsOrder": "sequence",
+      "dependsOn": ["backend: prepare", "db: seed"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Datenbank zurücksetzen",
+      "detail": "Lokale Testdatenbank löschen und neu anlegen (fragt vorher nach)",
+      "type": "shell",
+      "command": "python3 scripts/dev_reset_db.py",
+      "windows": { "command": "python scripts/dev_reset_db.py" },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -66,6 +66,8 @@ node_modules/
 **/.vscode/*
 !/.vscode/settings.json
 !/.vscode/extensions.json
+!/.vscode/launch.json
+!/.vscode/tasks.json
 .idea/
 *.code-workspace
 

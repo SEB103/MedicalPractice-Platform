@@ -29,7 +29,8 @@ export default defineConfig(() => ({
     },
   },
   devServer: {
-    open: false,
+    // VS Code launch config sets MEDICALPRACTICE_OPEN=1 to open the browser once the site is ready.
+    open: process.env.MEDICALPRACTICE_OPEN === '1',
     // Same-origin API in development: session cookie + CSRF work without CORS.
     proxy: Object.fromEntries(
       ['/api', '/media'].map((path) => [
