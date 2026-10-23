@@ -28,6 +28,10 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Verify generated API types match docs/api/openapi.yaml
+        run: |
+          npm run api:types --workspace frontend
+          git diff --exit-code -- frontend/src/types/api-schema.d.ts
       - name: Typecheck frontend
         run: npm run check
       - name: Lint frontend

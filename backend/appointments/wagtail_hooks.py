@@ -14,7 +14,7 @@ from wagtail.admin.forms import WagtailAdminModelForm
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.ui.components import Component
 from wagtail.admin.ui.tables import Column, TitleColumn
-from wagtail.admin.views.generic import CreateView, InspectView
+from wagtail.admin.views.generic import CreateView, EditView, InspectView
 from wagtail.admin.viewsets.model import ModelViewSet
 from wagtail.admin.widgets import AdminDateTimeInput
 
@@ -94,6 +94,16 @@ class DeclineReasonForm(WagtailAdminModelForm):
         fields = ["decline_reason"]
 
 
+class AppointmentTitleMixin:
+    def get_page_subtitle(self):
+        start = timezone.localtime(self.object.start)
+        return f"{start:%d.%m.%Y %H:%M} · {patient_name(self.object)}"
+
+
+class AppointmentEditView(AppointmentTitleMixin, EditView):
+    pass
+
+
 class AppointmentCreateView(CreateView):
     def save_instance(self):
         data = self.form.cleaned_data
@@ -110,7 +120,7 @@ class AppointmentCreateView(CreateView):
             return self.form_invalid(form)
 
 
-class AppointmentDetailView(InspectView):
+class AppointmentDetailView(AppointmentTitleMixin, InspectView):
     template_name = "appointments/admin/detail.html"
 
     def get_context_data(self, **kwargs):
@@ -128,6 +138,7 @@ class AppointmentViewSet(ModelViewSet):
     menu_order = 100
     add_to_admin_menu = True
     add_view_class = AppointmentCreateView
+    edit_view_class = AppointmentEditView
     inspect_view_enabled = True
     inspect_view_class = AppointmentDetailView
     inspect_view_fields = ["start", "end", "service", "status", "decline_reason", "created_at"]

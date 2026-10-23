@@ -103,6 +103,7 @@ def test_record_shows_match_and_links_account(client, doctor):
     client.force_login(doctor)
     record = client.get(reverse("patients:inspect", args=[reg.pk]))
     assert "Mögliche Übereinstimmung" in record.content.decode()
+    assert "Ansehen: Mustermann, Max" in record.content.decode()  # heading shows the name
     client.post(reverse("patients_link", args=[reg.pk]), {"target": target.pk})
     target.refresh_from_db()
     assert target.user is not None and not Patient.objects.filter(pk=reg.pk).exists()

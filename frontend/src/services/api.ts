@@ -3,63 +3,17 @@ import { api } from './http'
 import type { Appointment, AppointmentStatus, Role } from '../types/domain'
 import type { WagtailImageDto } from '../types/content'
 
-export interface PatientDto {
-  first_name: string
-  last_name: string
-  birth_date: string
-  phone: string
-  street: string
-  postal_code: string
-  city: string
-  status: 'pending' | 'approved' | 'rejected' | 'blocked'
-  account_linked: boolean
-}
-export interface MeDto {
-  email: string
-  patient: PatientDto | null
-}
-export interface ServiceDto {
-  id: number
-  title: string
-  description: string
-  icon: string
-  duration_minutes: number
-}
-export interface ScheduleDto {
-  weekly: { weekday: number; start: string; end: string }[]
-  closures: { start_date: string; end_date: string; reason: string }[]
-  special_hours: { date: string; start: string; end: string }[]
-  slot_step_minutes: number
-  buffer_minutes: number
-  horizon_days: number
-}
-interface AvailabilityDto {
-  service: number
-  duration_minutes: number
-  days: { date: string; slots: string[] }[]
-}
-interface AppointmentDto {
-  id: number
-  service: ServiceDto | null
-  start: string
-  end: string
-  status: string
-  decline_reason: string
-  replaces: number | null
-  can_change: boolean
-}
-export interface RegistrationInput {
-  email: string
-  password: string
-  first_name: string
-  last_name: string
-  birth_date: string
-  phone: string
-  street: string
-  postal_code: string
-  city: string
-  privacy_accepted: boolean
-}
+import type { components } from '../types/api-schema'
+
+/** DTO types generated from docs/api/openapi.yaml (`npm run api:types`). */
+type Schemas = components['schemas']
+export type PatientDto = Schemas['PatientMe']
+export type MeDto = Schemas['Me']
+export type ServiceDto = Schemas['Service']
+export type ScheduleDto = Schemas['Schedule']
+type AvailabilityDto = Schemas['Availability']
+type AppointmentDto = Schemas['Appointment']
+export type RegistrationInput = Schemas['Register']
 /** date (YYYY-MM-DD) → list of { time (HH:mm Berlin), start (ISO with offset) } */
 export type AvailabilityMap = Record<string, { time: string; start: string }[]>
 
@@ -117,7 +71,7 @@ export const authApi = {
       method: 'POST',
       body: { uid, token, new_password: newPassword },
     }),
-  updateContact: (contact: Pick<PatientDto, 'phone' | 'street' | 'postal_code' | 'city'>) =>
+  updateContact: (contact: Schemas['PatchedPatientMe']) =>
     api<MeDto>('me/', { method: 'PATCH', body: contact }),
 }
 
