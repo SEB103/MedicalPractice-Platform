@@ -43,15 +43,16 @@ Starter template is distributed under MIT for reusability. Reassess license depe
 ## Run locally from VS Code (one click)
 
 Requirements: Docker Desktop (running), Python 3.12+, Node.js 24+, VS Code with the recommended extensions
-(Python/debugpy). Open the repository folder in VS Code.
+(Python/debugpy). Open the repository folder in VS Code and use **Run and Debug** (Ctrl+Shift+D); choose an
+entry in the dropdown at the top and press ▶:
 
-1. **Once:** `Terminal → Run Task… → Einrichten (einmalig)` (creates `backend/.venv`, installs Python and npm
-   packages).
-2. **Once (or after a reset):** `Run Task… → Demo-Daten anlegen` (migrations, fictional services/hours and demo
-   accounts; their passwords are written to the ignored file `backend/.env.demo-login`).
-3. **Every time:** `Run and Debug → ▶ Praxis starten (alles)` — starts PostgreSQL, Django (with debugger,
-   http://127.0.0.1:8000/cms/) and the Quasar site in real API mode (http://localhost:9000, opens
+1. **⚙ Einrichten (einmalig)** — creates `backend/.venv`, installs Python and npm packages.
+2. **⚙ Demo-Daten anlegen** — starts PostgreSQL, applies migrations, adds fictional services/hours and demo
+   accounts (passwords in the ignored file `backend/.env.demo-login`).
+3. **▶ Praxis starten (alles)** — every time: PostgreSQL + migrations, Django with debugger
+   (http://127.0.0.1:8000/cms/) and the Quasar site in real API mode (http://localhost:9000, opens
    automatically). Stop everything with ■.
 
-`Run Task… → Datenbank zurücksetzen` deletes and recreates the **local** test database after confirmation.
-Development only — no real patient data.
+**⚠ Datenbank zurücksetzen** deletes and recreates the **local** test database after typing `JA`.
+The same steps work in a terminal: `node scripts/dev.mjs setup|seed|reset`. Development only — no real
+patient data.
