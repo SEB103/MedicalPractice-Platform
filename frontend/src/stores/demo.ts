@@ -5,6 +5,16 @@ import { contentProvider } from '../services/content'
 import type { PracticeTheme } from '../types/domain'
 import { contentByTheme } from '../mocks/content'
 import { practices } from '../mocks/practice'
+import { apiMode } from '../config/api'
+import {
+  authApi,
+  practiceApi,
+  roleFor,
+  type AvailabilityMap,
+  type MeDto,
+  type ScheduleDto,
+  type ServiceDto,
+} from '../services/api'
 export const useDemoStore = defineStore('demo', () => {
   let raw: string | null = null
   try {
@@ -24,7 +34,37 @@ export const useDemoStore = defineStore('demo', () => {
     time: string
     step: number
   } | null>(null)
-  const practice = computed(() => practices[state.value.theme])
+  // Real-API state (MEDICALPRACTICE_API=http); unused in the static mock demo.
+  const me = ref<MeDto | null>(null)
+  const apiServices = ref<ServiceDto[] | null>(null)
+  const schedule = ref<ScheduleDto | null>(null)
+  const availability = ref<Record<string, AvailabilityMap>>({})
+  const practice = computed(() => {
+    const base = practices[state.value.theme]
+    if (!apiMode || !apiServices.value) return base
+    return {
+      ...base,
+      services: apiServices.value.map((s) => ({
+        id: String(s.id),
+        title: s.title,
+        icon: s.icon || 'event',
+        description: s.description,
+        durationMinutes: s.duration_minutes,
+      })),
+    }
+  })
+  async function refreshMe() {
+    me.value = await authApi.me()
+    state.value.role = roleFor(me.value)
+  }
+  async function loadPractice() {
+    const [services, hours] = await Promise.all([practiceApi.services(), practiceApi.schedule()])
+    apiServices.value = services
+    schedule.value = hours
+  }
+  async function loadAvailability(serviceId: string) {
+    availability.value = { ...availability.value, [serviceId]: await practiceApi.availability(serviceId) }
+  }
   const publicContent = ref({ ...contentByTheme })
   const publicContentError = ref('')
   const content = computed(() => publicContent.value[state.value.theme])
@@ -38,7 +78,21 @@ export const useDemoStore = defineStore('demo', () => {
           'Aktuelle Praxisinformationen konnten nicht geladen werden. Die Vorschau zeigt lokale Beispielinhalte.'
     }
   }
-  const profile = computed(() => ({
+  const profile = computed(() => {
+    const patient = me.value?.patient
+    if (apiMode && me.value)
+      return {
+        name: patient ? `${patient.first_name} ${patient.last_name}` : me.value.email,
+        email: me.value.email,
+        address: patient
+          ? [patient.street, [patient.postal_code, patient.city].filter(Boolean).join(' ')]
+              .filter(Boolean)
+              .join(', ')
+          : '',
+      }
+    return demoProfile.value
+  })
+  const demoProfile = computed(() => ({
     name: 'Max Mustermann',
     email: 'max.mustermann@example.invalid',
     address: state.value.alternateAddress
@@ -68,6 +122,12 @@ export const useDemoStore = defineStore('demo', () => {
     publicContentError,
     loadPublicContent,
     profile,
+    me,
+    schedule,
+    availability,
+    refreshMe,
+    loadPractice,
+    loadAvailability,
     storageAvailable,
     failNext,
     conflictNext,

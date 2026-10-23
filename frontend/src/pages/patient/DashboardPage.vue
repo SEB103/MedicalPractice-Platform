@@ -4,10 +4,13 @@ import PageHeading from '../../components/PageHeading.vue'
 import StatusChip from '../../components/StatusChip.vue'
 import LoadState from '../../components/LoadState.vue'
 import { useClock } from '../../composables/useClock'
+import { useDemoStore } from '../../stores/demo'
 import { useAppointments } from '../../composables/useAppointments'
 import { berlinToday, isUpcoming, formatDate } from '../../services/appointments'
 const { records, loading, error, load } = useAppointments()
 const now = useClock()
+const demo = useDemoStore()
+const greeting = computed(() => `Guten Tag, ${demo.profile.name.split(' ')[0]}.`)
 const upcoming = computed(() =>
   records.value
     .filter((a) => isUpcoming(a, now.value))
@@ -31,7 +34,7 @@ const selectedAppointments = computed(() =>
   <q-page class="page-space">
     <div class="content-width">
       <PageHeading
-        title="Guten Tag, Max."
+        :title="greeting"
         eyebrow="Mein Dashboard"
         description="Schön, dass Sie da sind. Hier behalten Sie Ihre Termine im Blick."
       />
@@ -78,7 +81,7 @@ const selectedAppointments = computed(() =>
               <q-icon name="add_circle_outline" color="primary" size="40px" />
               <h2 class="text-h5 q-mt-lg">Zeit für Ihren nächsten Schritt.</h2>
               <p class="muted">
-                Wählen Sie einen passenden Tag und senden Sie eine Demo-Terminanfrage.
+                Wählen Sie einen passenden Tag und senden Sie eine Terminanfrage.
               </p>
               <q-btn
                 color="primary"

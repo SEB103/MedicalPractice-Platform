@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { apiMode } from '../../config/api'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useDemoStore } from '../../stores/demo'
@@ -79,7 +80,39 @@ const day = ref<string | null>(
 )
 const time = ref(savedDraft?.time ?? '')
 const schedule = computed(() => scheduleFor(today.value))
-const available = computed(() =>
+const serverAvailable = computed(() => {
+  const map = demo.availability[selectedServiceId.value] ?? {}
+  return Object.fromEntries(
+    Object.entries(map).map(([date, slots]) => [
+      date,
+      slots
+        .map((s) => s.time)
+        .filter((t) => !(original.value?.date === date && original.value.time === t)),
+    ]),
+  ) as Record<string, string[]>
+})
+const loadingSlots = ref(false)
+async function refreshAvailability() {
+  if (!apiMode || !selectedServiceId.value || selectedServiceId.value.startsWith('legacy:')) return
+  loadingSlots.value = true
+  try {
+    await demo.loadAvailability(selectedServiceId.value)
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Freie Termine konnten nicht geladen werden.'
+  } finally {
+    loadingSlots.value = false
+  }
+}
+watch(selectedServiceId, refreshAvailability, { immediate: true })
+onMounted(() => {
+  if (apiMode && demo.state.role === 'approved') void api.list().catch(() => undefined)
+})
+const closureNotice = computed(() =>
+  (demo.schedule?.closures ?? [])
+    .map((c) => `${formatDate(c.start_date)} – ${formatDate(c.end_date)}${c.reason ? ' · ' + c.reason : ''}`)
+    .join('; '),
+)
+const localAvailable = computed(() =>
   Object.fromEntries(
     Array.from({ length: schedule.value.horizonDays }, (_, i) => {
       const d = new Date(today.value + 'T12:00:00Z')
@@ -98,6 +131,9 @@ const available = computed(() =>
       ]
     }),
   ),
+)
+const available = computed<Record<string, string[]>>(() =>
+  apiMode ? serverAvailable.value : localAvailable.value,
 )
 const slots = computed(() => (day.value ? (available.value[day.value] ?? []) : []))
 function dateAllowed(value: string) {
@@ -195,6 +231,7 @@ async function submit() {
     await router.push('/patient/details/' + result.id)
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Anfrage fehlgeschlagen'
+    await refreshAvailability()
     if (!slots.value.includes(time.value) || error.value.includes('Konflikt')) {
       time.value = ''
       step.value = 2
@@ -241,7 +278,10 @@ async function submit() {
             <p class="muted q-mt-md">
               Dauer: {{ duration }} Minuten · Dr. Anna Linden · Vor Ort in der Praxis
             </p>
-            <q-banner rounded class="q-mt-md">
+            <q-banner v-if="apiMode && closureNotice" rounded class="q-mt-md">
+              Praxis geschlossen: {{ closureNotice }}
+            </q-banner>
+            <q-banner v-if="!apiMode" rounded class="q-mt-md">
               Urlaub: {{ formatDate(schedule.absences[0]!.from) }} –
               {{ formatDate(schedule.absences[0]!.to) }}. Danach am
               {{ formatDate(Object.keys(schedule.overrides)[0]!) }} verkürzte Sprechzeit.
@@ -291,7 +331,7 @@ async function submit() {
                   bordered
                 />
                 <p class="text-caption muted q-mt-sm">
-                  Markierte Tage: eigene Demo-Termine.
+                  Markierte Tage: eigene Termine.
                   <br />
                   Buchbar: Werktage ab morgen, bis 90 Tage im Voraus. Ausgegraut: keine passenden
                   freien Zeiten.
@@ -356,7 +396,7 @@ async function submit() {
               <q-item>
                 <q-item-section>Patient</q-item-section>
                 <q-item-section>
-                  {{ demo.state.role === 'approved' ? 'Max Mustermann · Demo' : 'Nach Anmeldung' }}
+                  {{ demo.state.role === 'approved' ? (apiMode ? demo.profile.name : 'Max Mustermann · Demo') : 'Nach Anmeldung' }}
                 </q-item-section>
               </q-item>
               <q-item>
@@ -368,7 +408,10 @@ async function submit() {
                 </q-item-section>
               </q-item>
             </q-list>
-            <p class="muted q-mt-lg">
+            <p v-if="apiMode" class="muted q-mt-lg">
+              Ihre Anfrage wird als „Termin angefragt“ gespeichert. Die Praxis bestätigt den Termin.
+            </p>
+            <p v-else class="muted q-mt-lg">
               Demoannahme: Für eine Anfrage ist ein freigegebener Demoaccount erforderlich. Die neue
               Anfrage wird als „Termin angefragt“ gespeichert und ist noch nicht bestätigt. In
               dieser Demo wird nichts an die Praxis gesendet.
@@ -379,7 +422,7 @@ async function submit() {
                 unelevated
                 no-caps
                 v-if="demo.state.role === 'approved'"
-                :label="replaceId ? 'Neue Zeit anfragen' : 'Demo-Termin anfragen'"
+                :label="replaceId ? 'Neue Zeit anfragen' : apiMode ? 'Termin anfragen' : 'Demo-Termin anfragen'"
                 :loading="busy"
                 :disable="!selection || !day || !slots.includes(time)"
                 @click="submit"

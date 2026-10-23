@@ -1,7 +1,14 @@
 export type Role = 'visitor' | 'approved' | 'pending'
 export type PracticeTheme = 'hausarzt' | 'psychiatry' | 'gemeinschaft'
 export type ColorMode = 'light' | 'dark' | 'system'
-export type AppointmentStatus = 'confirmed' | 'pending' | 'cancelled' | 'completed'
+export type AppointmentStatus =
+  | 'confirmed'
+  | 'pending'
+  | 'cancelled'
+  | 'completed'
+  | 'declined'
+  | 'no_show'
+  | 'expired'
 export interface Appointment {
   serviceId?: string
   practiceProfile?: PracticeTheme
@@ -11,6 +18,8 @@ export interface Appointment {
   service: string
   durationMinutes?: number
   status: AppointmentStatus
+  /** Short organisational note from the practice (e.g. reason for declining). */
+  note?: string
 }
 export interface Booking {
   serviceId?: string

@@ -85,6 +85,11 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Passwort vergessen' },
       },
       {
+        path: 'passwort-neu',
+        component: () => import('../pages/auth/PasswordResetPage.vue'),
+        meta: { title: 'Neues Passwort' },
+      },
+      {
         path: 'freigabe',
         component: () => import('../pages/auth/PendingPage.vue'),
         meta: { title: 'Freigabe ausstehend' },

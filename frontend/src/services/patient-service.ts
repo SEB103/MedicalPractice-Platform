@@ -2,7 +2,36 @@ import { serviceById } from './service-catalog'
 import type { PatientService } from '../types/domain'
 import { useDemoStore } from '../stores/demo'
 import { cancelBooking, createBooking } from './appointments'
+import { apiMode } from '../config/api'
+import { appointmentsApi } from './api'
+
+function useHttpPatientService(): PatientService {
+  const demo = useDemoStore()
+  async function refresh() {
+    demo.state.appointments = await appointmentsApi.list()
+    return demo.state.appointments.map((item) => ({ ...item }))
+  }
+  return {
+    list: refresh,
+    async book(input, replaceId) {
+      if (!input.serviceId) throw new Error('Bitte wählen Sie eine Terminart.')
+      const slot = demo.availability[input.serviceId]?.[input.date]?.find((s) => s.time === input.time)
+      if (!slot) throw new Error('Der Termin ist nicht mehr verfügbar. Bitte wählen Sie eine andere Uhrzeit.')
+      const created = replaceId
+        ? await appointmentsApi.reschedule(replaceId, slot.start)
+        : await appointmentsApi.book(input.serviceId, slot.start)
+      await refresh()
+      return created
+    },
+    async cancel(id) {
+      await appointmentsApi.cancel(id)
+      await refresh()
+    },
+  }
+}
+
 export function usePatientService(): PatientService {
+  if (apiMode) return useHttpPatientService()
   const demo = useDemoStore()
   async function ready() {
     await new Promise((resolve) => setTimeout(resolve, 250))
