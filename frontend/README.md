@@ -28,3 +28,7 @@ Open http://localhost:9000. `MEDICALPRACTICE_API_TARGET` changes the proxied bac
 demo controls are hidden; registration, login, password reset, booking, cancelling and rescheduling use
 the server. Public texts, images, contact data, FAQ, legal pages and the colour palette come from the CMS
 (`/api/v1/content/`); fields left empty in Wagtail show the prototype texts.
+
+API DTO types in `src/types/api-schema.d.ts` are generated from `docs/api/openapi.yaml`; after backend API
+changes run `npm.cmd run api:types --workspace frontend` (CI fails if the file is outdated). Unit tests run on
+Node 24 (CI) and Node 25 (`tests/setup.ts` restores jsdom's Web Storage).

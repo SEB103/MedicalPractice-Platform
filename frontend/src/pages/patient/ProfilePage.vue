@@ -45,10 +45,10 @@ function edit() {
   alternate.value = demo.state.alternateAddress
   if (patient.value)
     Object.assign(contact, {
-      phone: patient.value.phone,
-      street: patient.value.street,
-      postal_code: patient.value.postal_code,
-      city: patient.value.city,
+      phone: patient.value.phone ?? '',
+      street: patient.value.street ?? '',
+      postal_code: patient.value.postal_code ?? '',
+      city: patient.value.city ?? '',
     })
   editing.value = true
 }

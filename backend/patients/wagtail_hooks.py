@@ -5,7 +5,7 @@ from django.urls import path, reverse
 from django.views.decorators.http import require_POST
 from wagtail import hooks
 from wagtail.admin.ui.tables import Column, TitleColumn
-from wagtail.admin.views.generic import CreateView, InspectView
+from wagtail.admin.views.generic import CreateView, EditView, InspectView
 from wagtail.admin.viewsets.model import ModelViewSet
 
 from practice.admin_ui import StatusBadgeColumn
@@ -38,6 +38,17 @@ def match_label(patient: Patient) -> str:
     return ""
 
 
+class PatientTitleMixin:
+    """Show the patient's name in admin headings; ``str()`` stays anonymous for audit logs."""
+
+    def get_page_subtitle(self):
+        return f"{self.object.last_name}, {self.object.first_name}"
+
+
+class PatientEditView(PatientTitleMixin, EditView):
+    pass
+
+
 class PatientCreateView(CreateView):
     """Patients entered by the practice are approved immediately and need no website account."""
 
@@ -45,7 +56,7 @@ class PatientCreateView(CreateView):
         return services.create_by_staff(by=self.request.user, **self.form.cleaned_data)
 
 
-class PatientRecordView(InspectView):
+class PatientRecordView(PatientTitleMixin, InspectView):
     template_name = "patients/admin/record.html"
 
     def get_context_data(self, **kwargs):
@@ -77,6 +88,7 @@ class PatientViewSet(ModelViewSet):
     add_to_admin_menu = True
     form_fields = FORM_FIELDS
     add_view_class = PatientCreateView
+    edit_view_class = PatientEditView
     inspect_view_enabled = True
     inspect_view_class = PatientRecordView
     inspect_view_fields = FORM_FIELDS + ["status", "source", "created_at", "approved_at", "account_linked_at"]
