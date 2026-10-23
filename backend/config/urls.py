@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,6 +22,12 @@ class HealthView(APIView):
 
 urlpatterns = [
     path("api/v1/health/", HealthView.as_view(), name="api-health"),
+    path(
+        "api/v1/schema/",
+        SpectacularAPIView.as_view(authentication_classes=[], permission_classes=[AllowAny]),
+        name="api-schema",
+    ),
+    path("api/v1/", include("accounts.urls")),
     path("django-admin/", admin.site.urls),
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
