@@ -25,6 +25,16 @@ PRACTICE_SETTINGS_PERMISSIONS = [
     for action in ("view", "add", "change", "delete")
 ] + [("practice", "change_schedulesettings")]
 
+WEBSITE_PERMISSIONS = [
+    ("cms", "change_sitecontent"),
+    ("cms", "change_practicecontact"),
+    ("cms", "change_appearance"),
+] + [
+    ("cms", f"{action}_{model}")
+    for model in ("faqitem", "legalpage")
+    for action in ("view", "add", "change", "delete")
+]
+
 ROLE_PERMISSIONS = {
     EMPFANG: COMMON_PERMISSIONS,
     PRAXISLEITUNG: COMMON_PERMISSIONS
@@ -34,5 +44,6 @@ ROLE_PERMISSIONS = {
         ("accounts", "add_user"),
         ("accounts", "change_user"),
     ]
-    + PRACTICE_SETTINGS_PERMISSIONS,
+    + PRACTICE_SETTINGS_PERMISSIONS
+    + WEBSITE_PERMISSIONS,
 }

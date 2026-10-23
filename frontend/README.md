@@ -26,4 +26,5 @@ npm.cmd run dev --workspace frontend
 
 Open http://localhost:9000. `MEDICALPRACTICE_API_TARGET` changes the proxied backend URL. In real API mode
 demo controls are hidden; registration, login, password reset, booking, cancelling and rescheduling use
-the server. Public texts still come from the prototype content until the CMS content API exists.
+the server. Public texts, images, contact data, FAQ, legal pages and the colour palette come from the CMS
+(`/api/v1/content/`); fields left empty in Wagtail show the prototype texts.

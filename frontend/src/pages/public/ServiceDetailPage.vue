@@ -21,6 +21,7 @@ const contentId = computed(
 )
 const content = computed(
   () =>
+    demo.content.serviceDetails.find((s) => s.id === service.value?.id) ??
     demo.content.serviceDetails.find((s) => s.id === contentId.value) ??
     (service.value
       ? { id: service.value.id, introduction: service.value.description, sections: [], preparation: [] }

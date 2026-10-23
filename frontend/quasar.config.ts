@@ -31,6 +31,11 @@ export default defineConfig(() => ({
   devServer: {
     open: false,
     // Same-origin API in development: session cookie + CSRF work without CORS.
-    proxy: { '/api': { target: process.env.MEDICALPRACTICE_API_TARGET || 'http://127.0.0.1:8000' } },
+    proxy: Object.fromEntries(
+      ['/api', '/media'].map((path) => [
+        path,
+        { target: process.env.MEDICALPRACTICE_API_TARGET || 'http://127.0.0.1:8000' },
+      ]),
+    ),
   },
 }))

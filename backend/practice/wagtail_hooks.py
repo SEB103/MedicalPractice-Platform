@@ -10,7 +10,17 @@ class ServiceViewSet(ModelViewSet):
     model = Service
     icon = "list-ul"
     menu_label = "Terminarten"
-    form_fields = ["title", "description", "icon", "duration_minutes", "is_active", "sort_order"]
+    form_fields = [
+        "title",
+        "description",
+        "icon",
+        "duration_minutes",
+        "is_active",
+        "sort_order",
+        "introduction",
+        "sections",
+        "preparation",
+    ]
     list_display = ["title", "duration_minutes", "is_active"]
     copy_view_enabled = False
 

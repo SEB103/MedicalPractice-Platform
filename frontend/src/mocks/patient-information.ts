@@ -1,4 +1,6 @@
-export const patientInformation = {
+import { reactive } from 'vue'
+// Reactive so that FAQ entries loaded from the CMS (real API mode) replace these texts.
+export const patientInformation = reactive({
   bookingSteps: [
     {
       title: 'Terminart wählen',
@@ -43,4 +45,4 @@ export const patientInformation = {
       a: 'Nein. Dieser Prototyp verwendet ausschließlich synthetische Daten und speichert den Demostand lokal in Ihrem Browser.',
     },
   ],
-}
+})

@@ -1,6 +1,7 @@
 /** Typed /api/v1/ endpoints and mapping to the prototype's domain types (see docs/api/openapi.yaml). */
 import { api } from './http'
 import type { Appointment, AppointmentStatus, Role } from '../types/domain'
+import type { WagtailImageDto } from '../types/content'
 
 export interface PatientDto {
   first_name: string
@@ -146,4 +147,39 @@ export const appointmentsApi = {
     ),
   cancel: async (id: string) =>
     toAppointment(await api<AppointmentDto>(`appointments/${id}/cancel/`, { method: 'POST' })),
+}
+
+export interface ContentSectionDto {
+  heading: string
+  paragraphs: string[]
+}
+export interface ContentDto {
+  site: {
+    specialty: string
+    headline: string
+    intro: string
+    hero: { eyebrow: string; lead: string; emphasis: string; note: string; image: WagtailImageDto | null }
+    portrait: WagtailImageDto | null
+    values: { icon: string; title: string; text: string }[]
+    about: ContentSectionDto[]
+    gallery: (WagtailImageDto | null)[]
+  }
+  contact: {
+    location_label: string
+    address: string
+    address_verified: boolean
+    place_id: string
+    phone: string
+    phone_notice: string
+    email: string
+    telephone_hours: string
+  }
+  appearance: { palette: string; custom_primary: string }
+  faq: { q: string; a: string }[]
+  legal: Record<string, { title: string; intro: string; sections: { heading: string; text: string }[] }>
+  services: { id: string; introduction: string; sections: ContentSectionDto[]; preparation: string[] }[]
+}
+
+export const contentApi = {
+  get: () => api<ContentDto>('content/'),
 }

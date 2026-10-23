@@ -5,9 +5,12 @@ import { contentProvider } from '../services/content'
 import type { PracticeTheme } from '../types/domain'
 import { contentByTheme } from '../mocks/content'
 import { practices } from '../mocks/practice'
+import { applySharedContent, mergeContent } from '../services/cms-content'
 import { apiMode } from '../config/api'
 import {
   authApi,
+  contentApi,
+  type ContentDto,
   practiceApi,
   roleFor,
   type AvailabilityMap,
@@ -41,18 +44,25 @@ export const useDemoStore = defineStore('demo', () => {
   const availability = ref<Record<string, AvailabilityMap>>({})
   const practice = computed(() => {
     const base = practices[state.value.theme]
-    if (!apiMode || !apiServices.value) return base
+    if (!apiMode) return base
+    const site = apiContent.value?.site
     return {
       ...base,
-      services: apiServices.value.map((s) => ({
-        id: String(s.id),
-        title: s.title,
-        icon: s.icon || 'event',
-        description: s.description,
-        durationMinutes: s.duration_minutes,
-      })),
+      specialty: site?.specialty || base.specialty,
+      headline: site?.headline || base.headline,
+      intro: site?.intro || base.intro,
+      services: apiServices.value ? apiServicesList(apiServices.value) : base.services,
     }
   })
+  function apiServicesList(services: ServiceDto[]) {
+    return services.map((s) => ({
+      id: String(s.id),
+      title: s.title,
+      icon: s.icon || 'event',
+      description: s.description,
+      durationMinutes: s.duration_minutes,
+    }))
+  }
   async function refreshMe() {
     me.value = await authApi.me()
     state.value.role = roleFor(me.value)
@@ -62,12 +72,19 @@ export const useDemoStore = defineStore('demo', () => {
     apiServices.value = services
     schedule.value = hours
   }
+  async function loadContent() {
+    apiContent.value = await contentApi.get()
+    applySharedContent(apiContent.value, schedule.value)
+  }
   async function loadAvailability(serviceId: string) {
     availability.value = { ...availability.value, [serviceId]: await practiceApi.availability(serviceId) }
   }
   const publicContent = ref({ ...contentByTheme })
   const publicContentError = ref('')
-  const content = computed(() => publicContent.value[state.value.theme])
+  const apiContent = ref<ContentDto | null>(null)
+  const content = computed(() =>
+    mergeContent(publicContent.value[state.value.theme], apiMode ? apiContent.value : null),
+  )
   async function loadPublicContent(theme: PracticeTheme) {
     publicContentError.value = ''
     try {
@@ -127,6 +144,8 @@ export const useDemoStore = defineStore('demo', () => {
     availability,
     refreshMe,
     loadPractice,
+    loadContent,
+    apiContent,
     loadAvailability,
     storageAvailable,
     failNext,

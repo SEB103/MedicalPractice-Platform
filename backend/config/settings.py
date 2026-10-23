@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "patients",
     "practice",
     "appointments",
+    "cms",
     "wagtail.contrib.settings",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
