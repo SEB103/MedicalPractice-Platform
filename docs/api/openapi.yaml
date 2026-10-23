@@ -267,6 +267,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Availability'
           description: ''
+  /api/v1/content/:
+    get:
+      operationId: content_retrieve
+      tags:
+      - content
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve

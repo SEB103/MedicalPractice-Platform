@@ -1,5 +1,7 @@
 """Versioned API and server-side administration endpoints."""
 
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.types import OpenApiTypes
@@ -32,7 +34,11 @@ urlpatterns = [
     ),
     path("api/v1/", include("accounts.urls")),
     path("api/v1/", include("appointments.urls")),
+    path("api/v1/", include("cms.urls")),
     path("django-admin/", admin.site.urls),
     path("cms/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

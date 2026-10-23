@@ -19,7 +19,9 @@ Stack: **Python 3.12, Django 5.2 LTS, Django REST Framework, Wagtail 7.4 LTS, Po
 
 - Practice admin in Wagtail (`/cms/`, phase 3): dashboard panel "Heute in der Praxis", menu "Terminanfragen", "Termine" (list with status/date filters, booking by phone, blocking time, confirm / decline / reschedule / cancel / no-show), "Patienten" (search, manual creation, record with visit history, possible-match hint, approve / link / reject / block), "Praxis-Einstellungen" (services, hours, closures, special hours) and the "Terminregeln" setting. Role `Empfang` sees patients and appointments only; `Praxisleitung` also settings and users; only superusers can grant administrator rights.
 
-Not implemented yet: public CMS content, production infrastructure. The Quasar demo still uses synthetic local data.
+- Public website content (phase 4): Wagtail settings "Website-Inhalte" (texts, hero/portrait/gallery images, values, about sections), "Kontakt", "Erscheinungsbild" (palette), snippets "FAQ" and "Rechtliche Seiten", and per-service detail texts in "Terminarten". Public read-only `GET /api/v1/content/` (images as renditions with focal point). Empty fields keep the prototype texts in the frontend. Only `Praxisleitung` edits website content and images.
+
+Not implemented yet: production infrastructure. The Quasar demo still uses synthetic local data.
 
 **Custom user model:** databases created before phase 1 must be recreated (development data only): `docker compose -f deployment/compose.dev.yml down -v`, then `up -d` and `migrate`.
 

@@ -1,6 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
+from wagtail.fields import StreamField
+
+from cms.blocks import SectionBlock
 
 
 class Service(models.Model):
@@ -12,6 +15,11 @@ class Service(models.Model):
     duration_minutes = models.PositiveSmallIntegerField("Dauer (Minuten)", default=30)
     is_active = models.BooleanField("Buchbar", default=True)
     sort_order = models.PositiveSmallIntegerField("Reihenfolge", default=0)
+    introduction = models.TextField("Detailseite: Einleitung", blank=True)
+    sections = StreamField(
+        [("section", SectionBlock())], blank=True, verbose_name="Detailseite: Abschnitte"
+    )
+    preparation = models.TextField("Detailseite: Vorbereitung (ein Hinweis pro Zeile)", blank=True)
 
     class Meta:
         verbose_name = "Terminart"

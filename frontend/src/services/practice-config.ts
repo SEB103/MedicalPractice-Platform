@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import { weeklyHours, describeHours } from './practice-hours'
 export interface PracticeContact {
   locationLabel: string
@@ -10,7 +11,8 @@ export interface PracticeContact {
   consultationHours: [string, string][]
   telephoneHours: string
 }
-export const practiceContact: PracticeContact = {
+// Reactive so that contact data loaded from the CMS (real API mode) updates every page.
+export const practiceContact = reactive<PracticeContact>({
   locationLabel: 'Rathaus Göppingen · Demostandort, keine Arztpraxis',
   address: 'Hauptstraße 1, 73033 Göppingen, Deutschland',
   addressVerified: true,
@@ -20,7 +22,7 @@ export const practiceContact: PracticeContact = {
   email: 'praxis@example.invalid',
   consultationHours: describeHours(weeklyHours),
   telephoneHours: 'Montag bis Freitag · 09:00–11:00 (Demo)',
-}
+})
 export function mapLinks(config: PracticeContact) {
   if (!config.addressVerified || !config.address.trim()) return null
   const search = new URLSearchParams({ api: '1', query: config.address })

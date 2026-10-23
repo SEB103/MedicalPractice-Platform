@@ -1,10 +1,12 @@
+import { reactive } from 'vue'
 export interface LegalContent {
   title: string
   intro: string
   sections: { heading: string; text: string }[]
   sources: { label: string; url: string }[]
 }
-export const legalPages: Record<string, LegalContent> = {
+// Reactive so that legal pages loaded from the CMS (real API mode) replace these drafts.
+export const legalPages = reactive<Record<string, LegalContent>>({
   impressum: {
     title: 'Impressum',
     intro: 'Anbieterkennzeichnung der Praxis · noch nicht zur Veröffentlichung freigegeben.',
@@ -174,4 +176,4 @@ export const legalPages: Record<string, LegalContent> = {
       },
     ],
   },
-}
+})
