@@ -1,3 +1,5 @@
+from django.templatetags.static import static
+from django.utils.html import format_html
 from wagtail import hooks
 from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
 
@@ -47,3 +49,8 @@ class PracticeSettingsGroup(ModelViewSetGroup):
 @hooks.register("register_admin_viewset")
 def register_practice_settings():
     return PracticeSettingsGroup()
+
+
+@hooks.register("insert_global_admin_css")
+def status_badge_css():
+    return format_html('<link rel="stylesheet" href="{}">', static("practice/admin-status.css"))

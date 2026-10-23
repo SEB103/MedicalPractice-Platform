@@ -3,7 +3,7 @@
 {% block main_content %}
     <p><strong>Patient:</strong>
         {% if object.patient %}<a href="{% url 'patients:inspect' object.patient.pk %}">{{ patient_label }}</a>{% else %}{{ patient_label }}{% endif %}
-        · <strong>Status:</strong> {{ object.display_label }}</p>
+        · <strong>Status:</strong> {% include "practice/admin/status_badge.html" with tone=object.status_tone label=object.display_label %}</p>
     {{ block.super }}
 
     {% if can_change %}

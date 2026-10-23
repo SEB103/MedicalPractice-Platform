@@ -8,6 +8,8 @@ from wagtail.admin.ui.tables import Column, TitleColumn
 from wagtail.admin.views.generic import CreateView, InspectView
 from wagtail.admin.viewsets.model import ModelViewSet
 
+from practice.admin_ui import StatusBadgeColumn
+
 from . import services
 from .models import Patient
 
@@ -85,7 +87,7 @@ class PatientViewSet(ModelViewSet):
         TitleColumn("last_name", label="Nachname", get_url=record_url),
         "first_name",
         "birth_date",
-        Column("status", label="Status", accessor="get_status_display"),
+        StatusBadgeColumn("status", label="Status", accessor="get_status_display"),
         Column("source", label="Herkunft", accessor="get_source_display"),
         Column("match", label="Hinweis", accessor=match_label),
     ]

@@ -19,6 +19,7 @@ from wagtail.admin.viewsets.model import ModelViewSet
 from wagtail.admin.widgets import AdminDateTimeInput
 
 from patients.models import Patient
+from practice.admin_ui import StatusBadgeColumn
 
 from . import services
 from .models import ACTIVE_STATUSES, Appointment
@@ -136,7 +137,7 @@ class AppointmentViewSet(ModelViewSet):
         TitleColumn("start", label="Beginn", get_url=detail_url),
         Column("patient", label="Patient", accessor=patient_name),
         Column("service", label="Terminart"),
-        Column("status", label="Status", accessor="display_label"),
+        StatusBadgeColumn("status", label="Status", accessor="display_label"),
     ]
 
     def get_form_class(self, for_update=False):

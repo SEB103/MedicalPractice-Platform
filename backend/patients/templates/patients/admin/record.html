@@ -2,6 +2,7 @@
 {% load wagtailadmin_tags %}
 
 {% block main_content %}
+    <p><strong>Status:</strong> {% include "practice/admin/status_badge.html" with tone=object.status_tone label=object.get_status_display %}</p>
     {{ block.super }}
 
     {% if can_approve and object.status == "pending" %}
@@ -48,7 +49,7 @@
                 <tr>
                     <td><a href="{% url 'appointments:inspect' appointment.pk %}">{{ appointment.start|date:"d.m.Y H:i" }}</a></td>
                     <td>{{ appointment.service|default:"—" }}</td>
-                    <td>{{ appointment.display_label }}</td>
+                    <td>{% include "practice/admin/status_badge.html" with tone=appointment.status_tone label=appointment.display_label %}</td>
                 </tr>
             {% endfor %}
             </tbody>
