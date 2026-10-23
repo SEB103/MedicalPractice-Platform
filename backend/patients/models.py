@@ -58,6 +58,11 @@ class Patient(models.Model):
             ("block_patient", "Kann Patienten sperren"),
         ]
 
+    @property
+    def status_tone(self) -> str:
+        """Colour of the status badge in the admin."""
+        return {"approved": "success", "pending": "warning"}.get(self.status, "danger")
+
     def __str__(self):
         # Used as label in logs and admin breadcrumbs: never expose personal data here.
         return f"Patient #{self.pk}"

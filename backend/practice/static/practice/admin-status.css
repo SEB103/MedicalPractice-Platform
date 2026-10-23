@@ -1,0 +1,14 @@
+/* Coloured status badges in the practice admin; white text keeps >= 4.5:1 contrast. */
+.mp-status {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+.mp-status--success { background: #1b6e34; }
+.mp-status--warning { background: #8a5300; }
+.mp-status--danger { background: #b3261e; }
+.mp-status--neutral { background: #5f6368; }

@@ -1,0 +1,60 @@
+{% extends "wagtailadmin/generic/inspect.html" %}
+{% load wagtailadmin_tags %}
+
+{% block main_content %}
+    <p><strong>Status:</strong> {% include "practice/admin/status_badge.html" with tone=object.status_tone label=object.get_status_display %}</p>
+    {{ block.super }}
+
+    {% if can_approve and object.status == "pending" %}
+        <h2>Registrierung prüfen</h2>
+        {% if matches %}
+            <div class="help-block help-warning">
+                <p><strong>Mögliche Übereinstimmung:</strong> Es gibt bestehende Patientenakten mit gleichem Nachnamen und Geburtsdatum oder gleicher E-Mail. Bitte prüfen Sie, ob es dieselbe Person ist.</p>
+            </div>
+            {% for match in matches %}
+                <form method="post" action="{% url 'patients_link' object.pk %}" class="w-mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="target" value="{{ match.pk }}">
+                    <p><a href="{% url 'patients:inspect' match.pk %}">{{ match.last_name }}, {{ match.first_name }} · {{ match.birth_date|date:"d.m.Y" }}</a>
+                        · {{ match.email|default:"keine E-Mail" }} · {{ match.phone|default:"kein Telefon" }}</p>
+                    <p>Kontaktdaten aus der Registrierung übernehmen:
+                        {% for field, label in linkable_fields %}
+                            <label><input type="checkbox" name="copy_fields" value="{{ field }}"> {{ label }}</label>
+                        {% endfor %}
+                    </p>
+                    <button type="submit" class="button">Mit dieser Patientenakte verbinden</button>
+                </form>
+            {% endfor %}
+        {% endif %}
+        <form method="post" action="{% url 'patients_action' object.pk 'approve' %}" style="display:inline">
+            {% csrf_token %}<button type="submit" class="button">Als neuen Patienten freigeben</button>
+        </form>
+        <form method="post" action="{% url 'patients_action' object.pk 'reject' %}" style="display:inline">
+            {% csrf_token %}<button type="submit" class="button button-secondary no">Registrierung ablehnen</button>
+        </form>
+    {% endif %}
+
+    {% if can_block and object.status != "blocked" %}
+        <form method="post" action="{% url 'patients_action' object.pk 'block' %}" class="w-mt-4">
+            {% csrf_token %}<button type="submit" class="button button-secondary no">Patient sperren</button>
+        </form>
+    {% endif %}
+
+    <h2 class="w-mt-8">Termine</h2>
+    {% if appointments %}
+        <table class="listing">
+            <thead><tr><th>Datum</th><th>Terminart</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for appointment in appointments %}
+                <tr>
+                    <td><a href="{% url 'appointments:inspect' appointment.pk %}">{{ appointment.start|date:"d.m.Y H:i" }}</a></td>
+                    <td>{{ appointment.service|default:"—" }}</td>
+                    <td>{% include "practice/admin/status_badge.html" with tone=appointment.status_tone label=appointment.display_label %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Noch keine Termine.</p>
+    {% endif %}
+{% endblock %}

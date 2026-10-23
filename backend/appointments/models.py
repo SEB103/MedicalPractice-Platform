@@ -74,5 +74,21 @@ class Appointment(models.Model):
             return "expired"
         return self.status
 
+    @property
+    def status_tone(self) -> str:
+        """Colour of the status badge in the admin."""
+        return {
+            "confirmed": "success",
+            "completed": "success",
+            "requested": "warning",
+            "declined": "danger",
+            "no_show": "danger",
+        }.get(self.display_status, "neutral")
+
+    @property
+    def display_label(self) -> str:
+        extra = {"completed": "Termin wahrgenommen", "expired": "Anfrage nicht bestätigt"}
+        return extra.get(self.display_status) or self.get_status_display()
+
     def __str__(self):
         return f"Termin #{self.pk}"

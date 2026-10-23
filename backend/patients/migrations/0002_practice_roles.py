@@ -1,7 +1,24 @@
 from django.contrib.auth.management import create_permissions
 from django.db import migrations
 
-from accounts.roles import ROLE_PERMISSIONS
+_COMMON = [
+    ("wagtailadmin", "access_admin"),
+    ("patients", "view_patient"),
+    ("patients", "add_patient"),
+    ("patients", "change_patient"),
+    ("patients", "approve_patient"),
+]
+# Frozen copy of the roles at this migration; later changes go into new migrations.
+ROLE_PERMISSIONS = {
+    "Empfang": _COMMON,
+    "Praxisleitung": _COMMON
+    + [
+        ("patients", "block_patient"),
+        ("accounts", "view_user"),
+        ("accounts", "add_user"),
+        ("accounts", "change_user"),
+    ],
+}
 
 
 def create_roles(apps, schema_editor):
