@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management import call_command
 from django.db import IntegrityError, transaction
+from django.urls import reverse
 from wagtail.models import ModelLogEntry
 
 from accounts.roles import EMPFANG, PRAXISLEITUNG
@@ -53,8 +54,8 @@ def test_roles_exist_with_expected_permissions():
 def test_wagtail_user_admin_works_with_email_user(client):
     admin = get_user_model().objects.create_superuser("tech@example.invalid", "x")
     client.force_login(admin)
-    assert client.get("/cms/users/").status_code == 200
-    assert client.get("/cms/users/add/").status_code == 200
+    assert client.get(reverse("wagtailusers_users:index")).status_code == 200
+    assert client.get(reverse("wagtailusers_users:add")).status_code == 200
 
 
 def test_practice_owner_can_open_wagtail_but_not_django_admin(client, owner):

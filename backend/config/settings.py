@@ -107,6 +107,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "MedicalPractice API",
     "VERSION": "1",
     "SERVE_INCLUDE_SCHEMA": False,
+    "PREPROCESSING_HOOKS": ["config.api_schema.only_public_api"],
 }
 
 # Links in e-mails point to the Quasar frontend (hash routing).

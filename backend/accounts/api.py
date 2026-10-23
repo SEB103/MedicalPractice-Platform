@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import ensure_csrf_cookie
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -49,13 +50,13 @@ class AnonymousCsrfView(APIView):
 class CsrfView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: dict})
+    @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request):
         return Response({"detail": "ok"})
 
 
 class RegisterView(AnonymousCsrfView):
-    @extend_schema(request=RegisterSerializer, responses={202: dict})
+    @extend_schema(request=RegisterSerializer, responses={202: OpenApiTypes.OBJECT})
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -90,7 +91,7 @@ class LogoutView(APIView):
 
 
 class PasswordResetView(AnonymousCsrfView):
-    @extend_schema(request=PasswordResetSerializer, responses={202: dict})
+    @extend_schema(request=PasswordResetSerializer, responses={202: OpenApiTypes.OBJECT})
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

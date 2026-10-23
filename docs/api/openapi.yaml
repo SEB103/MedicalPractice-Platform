@@ -1,0 +1,393 @@
+openapi: 3.0.3
+info:
+  title: MedicalPractice API
+  version: '1'
+paths:
+  /api/v1/auth/csrf/:
+    get:
+      operationId: auth_csrf_retrieve
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: Public POST endpoint that still enforces CSRF (DRF skips it for
+        anonymous users).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: auth_password_reset_create
+      description: Public POST endpoint that still enforces CSRF (DRF skips it for
+        anonymous users).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      description: Public POST endpoint that still enforces CSRF (DRF skips it for
+        anonymous users).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: Public POST endpoint that still enforces CSRF (DRF skips it for
+        anonymous users).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      description: Public non-sensitive process health endpoint; no patient information.
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/me/:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+    patch:
+      operationId: me_partial_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientMe'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - email
+      - password
+    Me:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+        patient:
+          allOf:
+          - $ref: '#/components/schemas/PatientMe'
+          readOnly: true
+          nullable: true
+      required:
+      - email
+      - patient
+    PasswordReset:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PasswordResetConfirm:
+      type: object
+      properties:
+        uid:
+          type: string
+        token:
+          type: string
+        new_password:
+          type: string
+      required:
+      - new_password
+      - token
+      - uid
+    PatchedPatientMe:
+      type: object
+      properties:
+        first_name:
+          type: string
+          readOnly: true
+          title: Vorname
+        last_name:
+          type: string
+          readOnly: true
+          title: Nachname
+        birth_date:
+          type: string
+          format: date
+          readOnly: true
+          title: Geburtsdatum
+        phone:
+          type: string
+          title: Telefon
+          maxLength: 40
+        street:
+          type: string
+          title: Straße und Hausnummer
+          maxLength: 200
+        postal_code:
+          type: string
+          title: PLZ
+          maxLength: 10
+        city:
+          type: string
+          title: Ort
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        account_linked:
+          type: boolean
+          readOnly: true
+    PatientMe:
+      type: object
+      properties:
+        first_name:
+          type: string
+          readOnly: true
+          title: Vorname
+        last_name:
+          type: string
+          readOnly: true
+          title: Nachname
+        birth_date:
+          type: string
+          format: date
+          readOnly: true
+          title: Geburtsdatum
+        phone:
+          type: string
+          title: Telefon
+          maxLength: 40
+        street:
+          type: string
+          title: Straße und Hausnummer
+          maxLength: 200
+        postal_code:
+          type: string
+          title: PLZ
+          maxLength: 10
+        city:
+          type: string
+          title: Ort
+          maxLength: 100
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        account_linked:
+          type: boolean
+          readOnly: true
+      required:
+      - account_linked
+      - birth_date
+      - first_name
+      - last_name
+      - status
+    Register:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+        phone:
+          type: string
+          default: ''
+          maxLength: 40
+        street:
+          type: string
+          default: ''
+          maxLength: 200
+        postal_code:
+          type: string
+          default: ''
+          maxLength: 10
+        city:
+          type: string
+          default: ''
+          maxLength: 100
+        privacy_accepted:
+          type: boolean
+      required:
+      - birth_date
+      - email
+      - first_name
+      - last_name
+      - password
+      - privacy_accepted
+    StatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - blocked
+      type: string
+      description: |-
+        * `pending` - Freigabe ausstehend
+        * `approved` - Freigegeben
+        * `rejected` - Abgelehnt
+        * `blocked` - Gesperrt
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
