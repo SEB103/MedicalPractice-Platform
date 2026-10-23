@@ -1,6 +1,6 @@
 import { defineConfig } from '#q-app'
 export default defineConfig(() => ({
-  boot: ['theme'],
+  boot: ['api', 'theme'],
   css: ['app.css'],
   extras: ['roboto-font', 'material-icons'],
   framework: {
@@ -23,6 +23,14 @@ export default defineConfig(() => ({
     // Keep the usual root path for local development and other deployments.
     publicPath: process.env.MEDICALPRACTICE_BASE_PATH || '/',
     target: { browser: ['es2022'], node: 'node24' },
+    // 'mock' (default, static GitHub Pages demo) or 'http' (real Django API under /api/v1/).
+    define: {
+      'process.env.MEDICALPRACTICE_API': JSON.stringify(process.env.MEDICALPRACTICE_API || 'mock'),
+    },
   },
-  devServer: { open: false },
+  devServer: {
+    open: false,
+    // Same-origin API in development: session cookie + CSRF work without CORS.
+    proxy: { '/api': { target: process.env.MEDICALPRACTICE_API_TARGET || 'http://127.0.0.1:8000' } },
+  },
 }))

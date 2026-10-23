@@ -6,6 +6,7 @@ import { practiceContact } from '../../services/practice-config'
 import { useDemoStore } from '../../stores/demo'
 import { usePatientService } from '../../services/patient-service'
 import { canChange, formatDate } from '../../services/appointments'
+import { apiMode } from '../../config/api'
 import PageHeading from '../../components/PageHeading.vue'
 import StatusChip from '../../components/StatusChip.vue'
 const demo = useDemoStore()
@@ -21,7 +22,9 @@ function cancel() {
   $q.dialog({
     title: 'Termin absagen?',
     message:
-      'Die Absage wird in Ihrer Demo-Terminübersicht gespeichert. Es wird keine Nachricht versendet.',
+      apiMode
+        ? 'Der Termin wird abgesagt und die Zeit wieder freigegeben.'
+        : 'Die Absage wird in Ihrer Demo-Terminübersicht gespeichert. Es wird keine Nachricht versendet.',
     cancel: { label: 'Termin behalten', flat: true },
     ok: { label: 'Termin absagen', color: 'negative' },
   }).onOk(async () => {
@@ -29,7 +32,7 @@ function cancel() {
     error.value = ''
     try {
       await api.cancel(id)
-      $q.notify({ type: 'positive', message: 'Demo-Termin abgesagt.' })
+      $q.notify({ type: 'positive', message: apiMode ? 'Termin abgesagt.' : 'Demo-Termin abgesagt.' })
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Absage fehlgeschlagen'
     } finally {
@@ -65,7 +68,13 @@ function cancel() {
             <br />
             {{ practiceContact.address }}
           </p>
-          <q-banner v-if="item.status === 'pending'" rounded class="q-my-lg">
+          <q-banner v-if="item.note" rounded class="q-my-lg" role="status">
+            Hinweis der Praxis: {{ item.note }}
+          </q-banner>
+          <q-banner v-if="item.status === 'pending' && apiMode" rounded class="q-my-lg">
+            Ihre Anfrage wartet auf Bestätigung durch die Praxis.
+          </q-banner>
+          <q-banner v-else-if="item.status === 'pending'" rounded class="q-my-lg">
             Ihre Anfrage wartet auf Bestätigung. Diese Demo enthält keine echte Praxisfreigabe für
             Termine.
           </q-banner>

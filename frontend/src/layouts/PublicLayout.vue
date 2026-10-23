@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { apiMode } from '../config/api'
 import { ref } from 'vue'
 import { useDemoStore } from '../stores/demo'
 import { publicLinks } from '../mocks/practice'
@@ -13,7 +14,7 @@ const demo = useDemoStore()
       Zum Inhalt
     </a>
     <q-header bordered class="text-inherit" style="color: var(--ink)">
-      <div class="preview-notice">Fiktive Demonstrationspraxis · keine echte Terminbuchung</div>
+      <div v-if="!apiMode" class="preview-notice">Fiktive Demonstrationspraxis · keine echte Terminbuchung</div>
       <q-toolbar class="site-toolbar q-px-md" style="min-height: 76px">
         <BrandLogo />
         <q-space />

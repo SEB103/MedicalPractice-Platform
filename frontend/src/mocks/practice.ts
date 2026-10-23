@@ -152,12 +152,18 @@ export const statusLabels = {
   pending: 'Termin angefragt',
   cancelled: 'Termin abgesagt',
   completed: 'Abgeschlossen',
+  declined: 'Termin abgelehnt',
+  no_show: 'Nicht erschienen',
+  expired: 'Anfrage nicht bestätigt',
 }
 export const statusColors = {
   confirmed: 'green-9',
   pending: 'brown-8',
   cancelled: 'grey-7',
   completed: 'blue-grey-7',
+  declined: 'red-9',
+  no_show: 'red-9',
+  expired: 'grey-7',
 }
 export const publicLinks = [
   { label: 'Startseite', to: '/' },

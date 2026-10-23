@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { apiMode } from '../config/api'
 import { useDemoStore } from '../stores/demo'
+import { useSession } from '../composables/useSession'
 import { patientLinks } from '../mocks/practice'
 import BrandLogo from '../components/BrandLogo.vue'
 import ThemeControls from '../components/ThemeControls.vue'
 const drawer = ref(false)
+const { logout } = useSession()
 const demo = useDemoStore()
-const router = useRouter()
-function logout() {
-  demo.state.role = 'visitor'
-  void router.push('/')
-}
+const initials = computed(() =>
+  demo.profile.name
+    .split(' ')
+    .map((part) => part[0] ?? '')
+    .join('')
+    .slice(0, 2)
+    .toUpperCase(),
+)
 </script>
 <template>
   <q-layout view="hHh Lpr fff" class="patient-layout">
@@ -23,7 +29,7 @@ function logout() {
       Zum Inhalt
     </a>
     <q-header bordered style="color: var(--ink)">
-      <div class="preview-notice">Fiktive Demonstrationspraxis · keine echte Terminbuchung</div>
+      <div v-if="!apiMode" class="preview-notice">Fiktive Demonstrationspraxis · keine echte Terminbuchung</div>
       <q-toolbar class="site-toolbar" style="min-height: 70px">
         <q-btn
           flat
@@ -54,9 +60,9 @@ function logout() {
     </q-header>
     <q-drawer id="patient-menu" v-model="drawer" show-if-above :width="252" bordered>
       <div class="q-pa-lg">
-        <q-avatar size="48px" color="primary" text-color="white">MM</q-avatar>
-        <div class="text-subtitle1 q-mt-md">Max Mustermann</div>
-        <div class="muted text-caption">Freigegebener Demoaccount</div>
+        <q-avatar size="48px" color="primary" text-color="white">{{ initials }}</q-avatar>
+        <div class="text-subtitle1 q-mt-md">{{ demo.profile.name }}</div>
+        <div class="muted text-caption">{{ apiMode ? 'Patientenkonto' : 'Freigegebener Demoaccount' }}</div>
       </div>
       <q-separator />
       <q-list padding>
@@ -73,7 +79,7 @@ function logout() {
         </q-item>
       </q-list>
       <div class="q-pa-md">
-        <q-banner rounded class="bg-transparent text-caption muted">
+        <q-banner v-if="!apiMode" rounded class="bg-transparent text-caption muted">
           Nur synthetische Daten. Änderungen werden in diesem Browser gespeichert.
         </q-banner>
         <q-btn flat no-caps icon="arrow_back" to="/" label="Zur Praxiswebsite" />

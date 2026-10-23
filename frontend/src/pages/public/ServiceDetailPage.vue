@@ -3,11 +3,29 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDemoStore } from '../../stores/demo'
 import { serviceFromRoute } from '../../services/service-catalog'
+import { apiMode } from '../../config/api'
+import { practices } from '../../mocks/practice'
 import PageHeading from '../../components/PageHeading.vue'
 const demo = useDemoStore()
 const route = useRoute()
-const service = computed(() => serviceFromRoute(demo.state.theme, String(route.params.id)))
-const content = computed(() => demo.content.serviceDetails.find((s) => s.id === service.value?.id))
+const service = computed(() =>
+  apiMode
+    ? demo.practice.services.find((s) => s.id === String(route.params.id))
+    : serviceFromRoute(demo.state.theme, String(route.params.id)),
+)
+// Until CMS content exists (phase 4), real services reuse prototype texts with the same title.
+const contentId = computed(
+  () =>
+    practices[demo.state.theme].services.find((s) => s.title === service.value?.title)?.id ??
+    service.value?.id,
+)
+const content = computed(
+  () =>
+    demo.content.serviceDetails.find((s) => s.id === contentId.value) ??
+    (service.value
+      ? { id: service.value.id, introduction: service.value.description, sections: [], preparation: [] }
+      : undefined),
+)
 </script>
 <template>
   <q-page class="page-space">
