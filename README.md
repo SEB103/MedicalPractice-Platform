@@ -39,3 +39,20 @@ CI validates the scaffold, builds and tests Quasar, and runs Django/DRF/Wagtail 
 ## License
 
 Starter template is distributed under MIT for reusability. Reassess license dependencies and policies before distributing full Wagtail/Quasar application; do not copy ReqDeck GPL project code into it.
+
+## Run locally from VS Code (one click)
+
+Requirements: Docker Desktop (running), Python 3.12+, Node.js 24+, VS Code with the recommended extensions
+(Python/debugpy). Open the repository folder in VS Code and use **Run and Debug** (Ctrl+Shift+D); choose an
+entry in the dropdown at the top and press ▶:
+
+1. **⚙ Einrichten (einmalig)** — creates `backend/.venv`, installs Python and npm packages.
+2. **⚙ Demo-Daten anlegen** — starts PostgreSQL, applies migrations, adds fictional services/hours and demo
+   accounts (passwords in the ignored file `backend/.env.demo-login`).
+3. **▶ Praxis starten (alles)** — every time: PostgreSQL + migrations, Django with debugger
+   (http://127.0.0.1:8000/cms/) and the Quasar site in real API mode (http://localhost:9000, opens
+   automatically). Stop everything with ■.
+
+**⚠ Datenbank zurücksetzen** deletes and recreates the **local** test database after typing `JA`.
+The same steps work in a terminal: `node scripts/dev.mjs setup|seed|reset`. Development only — no real
+patient data.

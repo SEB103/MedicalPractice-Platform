@@ -1,0 +1,33 @@
+{
+  // Internal helper tasks for .vscode/launch.json (start PostgreSQL, apply migrations). Use Run and Debug.
+  "version": "2.0.0",
+  "options": {
+    "env": {
+      "DJANGO_DEBUG": "1",
+      "POSTGRES_PASSWORD": "local-dev-only"
+    }
+  },
+  "tasks": [
+    {
+      "label": "db: start",
+      "type": "shell",
+      "command": "docker compose -f deployment/compose.dev.yml up -d --wait",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: migrate",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py migrate",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py migrate" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "backend: prepare",
+      "detail": "PostgreSQL starten und Migrationen anwenden",
+      "dependsOrder": "sequence",
+      "dependsOn": ["db: start", "db: migrate"],
+      "problemMatcher": []
+    }
+  ]
+}

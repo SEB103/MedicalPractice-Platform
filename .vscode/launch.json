@@ -1,0 +1,81 @@
+{
+  // Everything is started from Run and Debug. Order: setup once → demo data once → "▶ Praxis starten (alles)".
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "⚙ Einrichten (einmalig)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/dev.mjs",
+      "args": ["setup"],
+      "console": "integratedTerminal",
+      "presentation": { "group": "2-tools", "order": 1 }
+    },
+    {
+      "name": "⚙ Demo-Daten anlegen",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/dev.mjs",
+      "args": ["seed"],
+      "console": "integratedTerminal",
+      "presentation": { "group": "2-tools", "order": 2 }
+    },
+    {
+      "name": "⚠ Datenbank zurücksetzen",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/dev.mjs",
+      "args": ["reset"],
+      "console": "integratedTerminal",
+      "presentation": { "group": "2-tools", "order": 3 }
+    },
+    {
+      "name": "Backend (Django)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "env": { "DJANGO_DEBUG": "1", "POSTGRES_PASSWORD": "local-dev-only" },
+      "preLaunchTask": "backend: prepare",
+      "presentation": { "group": "3-single", "order": 1 }
+    },
+    {
+      "name": "Website (Quasar, echtes API)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev --workspace frontend",
+      "windows": { "command": "npm.cmd run dev --workspace frontend" },
+      "cwd": "${workspaceFolder}",
+      "env": { "MEDICALPRACTICE_API": "http", "MEDICALPRACTICE_OPEN": "1" },
+      "presentation": { "group": "3-single", "order": 2 }
+    },
+    {
+      "name": "Backend (ohne Vorbereitung)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "env": { "DJANGO_DEBUG": "1", "POSTGRES_PASSWORD": "local-dev-only" },
+      "presentation": { "hidden": true }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "▶ Praxis starten (alles)",
+      "preLaunchTask": "backend: prepare",
+      "configurations": ["Backend (ohne Vorbereitung)", "Website (Quasar, echtes API)"],
+      "stopAll": true,
+      "presentation": { "group": "1-start", "order": 1 }
+    }
+  ]
+}
