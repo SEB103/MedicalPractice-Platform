@@ -13,12 +13,13 @@ REQUIRED = [
     'docs/ARCHITECTURE.md', 'packaging/product.json',
 ]
 IGNORE_RULES = [
-    '/.claude/', '/CLAUDE.md', '/AGENTS.md', '/task-context/',
+    '.claude/', 'CLAUDE.md', 'AGENTS.md', '/task-context/',
     '/generated-docs/', '/generated/', '/reference/',
 ]
 BLOCKED_ROOTS = {
     '.claude', '.codex', '.agents', '.opencode',
-    'CLAUDE.md', 'AGENTS.md', 'CLAUDE.local.md', 'opencode.jsonc',
+    'CLAUDE.md', 'AGENTS.md', 'AGENTS.override.md', 'CLAUDE.local.md',
+    'opencode.json', 'opencode.jsonc',
     'task-context', 'reference', 'generated', 'generated-docs',
 }
 

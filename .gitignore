@@ -2,14 +2,17 @@
 # Repository B: clean source product — no AI artifacts.
 # ============================================================
 # AI assistants are hosted in a separate external repository.
-/.claude/
-/.codex/
-/.agents/
-/.opencode/
-/CLAUDE.md
-/CLAUDE.local.md
-/AGENTS.md
-/opencode.jsonc
+# AI assistant files are never part of the product, at any depth.
+.claude/
+.codex/
+.agents/
+.opencode/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+AGENTS.override.md
+opencode.json
+opencode.jsonc
 /task-context/
 /reference/
 /generated-docs/
